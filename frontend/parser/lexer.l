@@ -88,6 +88,14 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     //TODO(Lab1)：实现多行注释的处理，包括修改上方的匹配规则
 }
 
+"int" {
+    RETT(INT, loc)
+}
+
+"float" {
+    RETT(FLOAT, loc)
+}
+
 [A-Za-z_]+[A-Za-z0-9_]* {
     auto str = std::string(yytext);
     return YaccParser::make_IDENT(str, loc); 
