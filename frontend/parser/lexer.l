@@ -32,12 +32,23 @@
     long long convertToInt(const char* str, const char end, bool& isLongLong);
     float convertToFloatDec(const char* str);
     float convertToFloatHex(const char* str);
+
+    // 目前十进制整型字面量无法识别0，8 16进制也不支持，为了后续处理方便，定义区就分开处理
 %}
 
 %option c++
 %option noyywrap debug
 %option yyclass="Scanner"
 %option prefix="Yacc_"
+
+DIGIT       [0-9]   
+NONZERO     [1-9]
+OCTDIGIT    [0-7]
+HEXDIGIT    [0-9A-Fa-f]
+
+DECINT      0|{NONZERO}{DIGIT}*
+OCTINT      0{OCTDIGIT}+
+HEXINT      0[xX]{HEXDIGIT}+
 
 %%
 
@@ -107,7 +118,8 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     return YaccParser::make_STR_CONST(str, loc); 
 }
 
-[1-9][0-9]* {
+{DECINT} {
+    //原来的方式无法识别单独的0，直接修改正则表达式不利于处理8 16进制
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
