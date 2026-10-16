@@ -117,9 +117,33 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     if (!str.empty()) str = str.substr(1, str.size() - 2);
     return YaccParser::make_STR_CONST(str, loc); 
 }
+{HEXINT} {
+    try {
+        bool isLL = false;
+        long long result = convertToInt(yytext, '\0', isLL);
+        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
+        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+{OCTINT} {
+    try {
+        bool isLL = false;
+        long long result = convertToInt(yytext, '\0', isLL);
+        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
+        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
 
 {DECINT} {
-    //原来的方式无法识别单独的0，直接修改正则表达式不利于处理8 16进制
+    //原来的方式无法识别单独的0，直接修改正则表达式不利于处理8 16进制 利用最长匹配原则
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
@@ -142,6 +166,7 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
 <<EOF>>         { RETT(END, loc); }
 
 %%
+
 
 int handleTab()
 {
