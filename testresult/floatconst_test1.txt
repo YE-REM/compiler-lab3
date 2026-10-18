@@ -1,0 +1,131 @@
+===================+=-==.==.-=+
+Token                         Lexeme                        Property                      Line    Column  
+INT                           int                                                         2       0       
+IDENT                         main                          main                          2       4       
+LPAREN                        (                                                           2       8       
+RPAREN                        )                                                           2       9       
+LBRACE                        {                                                           3       0       
+FLOAT                         float                                                       5       4       
+IDENT                         dec_zero                      dec_zero                      5       10      
+FLOAT_CONST                   0.0                                                         5       21      
+SEMICOLON                     ;                                                           5       24      
+FLOAT                         float                                                       6       4       
+IDENT                         dec_basic                     dec_basic                     6       10      
+FLOAT_CONST                   3.14                                                        6       22      
+SEMICOLON                     ;                                                           6       26      
+FLOAT                         float                                                       7       4       
+IDENT                         dec_leading_dot               dec_leading_dot               7       10      
+FLOAT_CONST                   .5                                                          7       28      
+SEMICOLON                     ;                                                           7       30      
+FLOAT                         float                                                       8       4       
+IDENT                         dec_trailing_dot              dec_trailing_dot              8       10      
+FLOAT_CONST                   5.                                                          8       29      
+SEMICOLON                     ;                                                           8       31      
+FLOAT                         float                                                       9       4       
+IDENT                         dec_small                     dec_small                     9       10      
+FLOAT_CONST                   0.000001                                                    9       22      
+SEMICOLON                     ;                                                           9       30      
+FLOAT                         float                                                       10      4       
+IDENT                         dec_large                     dec_large                     10      10      
+FLOAT_CONST                   12345.6789                                                  10      22      
+SEMICOLON                     ;                                                           10      32      
+FLOAT                         float                                                       11      4       
+IDENT                         dec_exp_zero                  dec_exp_zero                  11      10      
+FLOAT_CONST                   1e0                                                         11      25      
+SEMICOLON                     ;                                                           11      28      
+FLOAT                         float                                                       12      4       
+IDENT                         dec_exp_positive              dec_exp_positive              12      10      
+FLOAT_CONST                   1e10                                                        12      29      
+SEMICOLON                     ;                                                           12      33      
+FLOAT                         float                                                       13      4       
+IDENT                         dec_exp_negative              dec_exp_negative              13      10      
+FLOAT_CONST                   1e-10                                                       13      29      
+SEMICOLON                     ;                                                           13      34      
+FLOAT                         float                                                       14      4       
+IDENT                         dec_frac_exp                  dec_frac_exp                  14      10      
+FLOAT_CONST                   1.5e-3                                                      14      25      
+SEMICOLON                     ;                                                           14      31      
+FLOAT                         float                                                       15      4       
+IDENT                         dec_upper_exp                 dec_upper_exp                 15      10      
+FLOAT_CONST                   2.5E+4                                                      15      26      
+SEMICOLON                     ;                                                           15      32      
+FLOAT                         float                                                       16      4       
+IDENT                         dec_dot_exp                   dec_dot_exp                   16      10      
+FLOAT_CONST                   3.e+2                                                       16      24      
+SEMICOLON                     ;                                                           16      29      
+FLOAT                         float                                                       17      4       
+IDENT                         dec_leading_dot_exp           dec_leading_dot_exp           17      10      
+FLOAT_CONST                   .25E-2                                                      17      32      
+SEMICOLON                     ;                                                           17      38      
+FLOAT                         float                                                       19      4       
+IDENT                         dec_leading_zero              dec_leading_zero              19      10      
+FLOAT_CONST                   012.3                                                       19      29      
+SEMICOLON                     ;                                                           19      34      
+FLOAT                         float                                                       20      4       
+IDENT                         dec_leading_zero_exp          dec_leading_zero_exp          20      10      
+FLOAT_CONST                   012e2                                                       20      33      
+SEMICOLON                     ;                                                           20      38      
+FLOAT                         float                                                       22      4       
+IDENT                         hex_one                       hex_one                       22      10      
+INT_CONST                     0x1                           1                             22      20      
+IDENT                         p0                            p0                            22      23      
+SEMICOLON                     ;                                                           22      25      
+FLOAT                         float                                                       23      4       
+IDENT                         hex_integer                   hex_integer                   23      10      
+INT_CONST                     0x10                          16                            23      24      
+IDENT                         p0                            p0                            23      28      
+SEMICOLON                     ;                                                           23      30      
+FLOAT                         float                                                       24      4       
+IDENT                         hex_fraction                  hex_fraction                  24      10      
+INT_CONST                     0x1                           1                             24      25      
+FLOAT_CONST                   .8                                                          24      28      
+IDENT                         p0                            p0                            24      30      
+SEMICOLON                     ;                                                           24      32      
+FLOAT                         float                                                       25      4       
+IDENT                         hex_positive_exp              hex_positive_exp              25      10      
+INT_CONST                     0x1                           1                             25      29      
+FLOAT_CONST                   .8                                                          25      32      
+IDENT                         p                             p                             25      34      
+INT_CONST                     1                             1                             25      36      
+SEMICOLON                     ;                                                           25      37      
+FLOAT                         float                                                       26      4       
+IDENT                         hex_negative_exp              hex_negative_exp              26      10      
+INT_CONST                     0x1                           1                             26      29      
+FLOAT_CONST                   .8                                                          26      32      
+IDENT                         p                             p                             26      34      
+INT_CONST                     1                             1                             26      36      
+SEMICOLON                     ;                                                           26      37      
+FLOAT                         float                                                       27      4       
+IDENT                         hex_leading_dot               hex_leading_dot               27      10      
+INT_CONST                     0                             0                             27      28      
+IDENT                         x                             x                             27      29      
+FLOAT_CONST                   .8                                                          27      30      
+IDENT                         p0                            p0                            27      32      
+SEMICOLON                     ;                                                           27      34      
+FLOAT                         float                                                       28      4       
+IDENT                         hex_trailing_dot              hex_trailing_dot              28      10      
+INT_CONST                     0x1                           1                             28      29      
+IDENT                         p0                            p0                            28      33      
+SEMICOLON                     ;                                                           28      35      
+FLOAT                         float                                                       29      4       
+IDENT                         hex_upper_prefix              hex_upper_prefix              29      10      
+INT_CONST                     0XABC                         2748                          29      29      
+IDENT                         p2                            p2                            29      34      
+SEMICOLON                     ;                                                           29      36      
+FLOAT                         float                                                       30      4       
+IDENT                         hex_upper_exp                 hex_upper_exp                 30      10      
+INT_CONST                     0x1                           1                             30      26      
+IDENT                         Ap                            Ap                            30      30      
+INT_CONST                     3                             3                             30      33      
+SEMICOLON                     ;                                                           30      34      
+FLOAT                         float                                                       31      4       
+IDENT                         hex_large                     hex_large                     31      10      
+INT_CONST                     0x1234                        4660                          31      22      
+FLOAT_CONST                   .5678                                                       31      28      
+IDENT                         p                             p                             31      33      
+INT_CONST                     4                             4                             31      35      
+SEMICOLON                     ;                                                           31      36      
+RETURN                        return                                                      32      4       
+INT_CONST                     0                             0                             32      11      
+SEMICOLON                     ;                                                           32      12      
+RBRACE                        }                                                           33      0       

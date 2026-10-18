@@ -50,6 +50,10 @@ DECINT      0|{NONZERO}{DIGIT}*
 OCTINT      0{OCTDIGIT}+
 HEXINT      0[xX]{HEXDIGIT}+
 
+DECFRAC     ({DIGIT}+("."{DIGIT}*)|("."{DIGIT}+))
+DECEXP      [eE][+-]?{DIGIT}+
+DECFLOAT    ({DECFRAC}{DECEXP}?|{DIGIT}+{DECEXP})
+
 %%
 
 %{
@@ -117,6 +121,19 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     if (!str.empty()) str = str.substr(1, str.size() - 2);
     return YaccParser::make_STR_CONST(str, loc); 
 }
+
+{DECFLOAT} {
+    //框架提供的浮点数处理接口类似
+    try {
+        float result = convertToFloatDec(yytext);
+        return YaccParser::make_FLOAT_CONST(result, loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing decimal float: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+
 {HEXINT} {
     try {
         bool isLL = false;

@@ -1,4 +1,5 @@
-=.=0.=.=.=.==.=.-=.+=.-+++++++++=0.=0.=0.0-=0.=0=0-+++++=.=.=-=.0=0.0-=0.0=+=*=/==>0Token                         Lexeme                        Property                      Line    Column  
+=.=0.=.=.=.==.=.-=.+=.-+++++++++=0.=0.=0.0-=0.=0=0-+++++=.=.=-=.0=0.0-=0.0=+=*=/==>0
+Token                         Lexeme                        Property                      Line    Column  
 FLOAT                         float                                                       1       0       
 IDENT                         testDecimalFloats             testDecimalFloats             1       6       
 LPAREN                        (                                                           1       23      

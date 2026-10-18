@@ -1,4 +1,5 @@
-====================-=-=-=-=-====-=-=+*-=+-=+-=+-*Token                         Lexeme                        Property                      Line    Column  
+====================-=-=-=-=-====-=-=+*-=+-=+-=+-*
+Token                         Lexeme                        Property                      Line    Column  
 INT                           int                                                         2       0       
 IDENT                         main                          main                          2       4       
 LPAREN                        (                                                           2       8       
