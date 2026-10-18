@@ -35,6 +35,14 @@ namespace FE
                     result.sval = token.value.as<std::string>();
                     result.type = Token::TokenType::T_STRING;
                     break;
+                
+                //FLOAT_CONST属性新增
+                case kind::S_FLOAT_CONST:
+                    result.fval = token.value.as<float>();
+                    result.type = Token::TokenType::T_FLOAT;
+                    break;
+
+                
                 default: result.type = Token::TokenType::T_NONE; break;
             }
 

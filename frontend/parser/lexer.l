@@ -54,6 +54,10 @@ DECFRAC     ({DIGIT}+("."{DIGIT}*)|("."{DIGIT}+))
 DECEXP      [eE][+-]?{DIGIT}+
 DECFLOAT    ({DECFRAC}{DECEXP}?|{DIGIT}+{DECEXP})
 
+HEXFRAC     ({HEXDIGIT}+"."{HEXDIGIT}*|"."{HEXDIGIT}+)
+HEXEXP      [pP][+-]?{DIGIT}+
+HEXFLOAT    0[xX]({HEXFRAC}|{HEXDIGIT}+){HEXEXP}
+
 %%
 
 %{
@@ -120,6 +124,17 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     std::string str(yytext);
     if (!str.empty()) str = str.substr(1, str.size() - 2);
     return YaccParser::make_STR_CONST(str, loc); 
+}
+
+{HEXFLOAT} {
+    try {
+        float result = convertToFloatHex(yytext);
+        return YaccParser::make_FLOAT_CONST(result, loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal float: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
 }
 
 {DECFLOAT} {
