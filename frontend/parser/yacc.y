@@ -77,6 +77,27 @@
 %token SEMICOLON COMMA LPAREN RPAREN LBRACKET RBRACKET LBRACE RBRACE
 %token END
 
+//查阅资料可知token声明可以设置别名改善可读性
+%token PLUS    "+"
+%token MINUS   "-"
+%token STAR    "*"
+%token SLASH   "/"
+%token PERCENT "%"
+
+%token ASSIGN  "="
+
+%token LT      "<"
+%token GT      ">"
+%token LE      "<="
+%token GE      ">="
+%token EQ      "=="
+%token NE      "!="
+
+%token NOT     "!"
+%token AND     "&&"
+%token OR      "||"
+
+
 %nterm <FE::AST::Operator> UNARY_OP
 %nterm <FE::AST::Type*> TYPE
 %nterm <FE::AST::InitDecl*> INITIALIZER

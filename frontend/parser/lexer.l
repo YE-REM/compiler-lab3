@@ -107,6 +107,24 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     //TODO(Lab1)：实现多行注释的处理，包括修改上方的匹配规则
 }
 
+
+"=="    { RETT(EQ, loc) }
+"!="    { RETT(NE, loc) }
+"<="    { RETT(LE, loc) }
+">="    { RETT(GE, loc) }
+"&&"    { RETT(AND, loc) }
+"||"    { RETT(OR, loc) }
+
+"="     { RETT(ASSIGN, loc) }
+"<"     { RETT(LT, loc) }
+">"     { RETT(GT, loc) }
+"!"     { RETT(NOT, loc) }
+"+"     { RETT(PLUS, loc) }
+"-"     { RETT(MINUS, loc) }
+"*"     { RETT(STAR, loc) }
+"/"     { RETT(SLASH, loc) }
+"%"     { RETT(PERCENT, loc) }
+
 "int" {
     RETT(INT, loc)
 }

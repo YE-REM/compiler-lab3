@@ -1,0 +1,92 @@
+// 由 Codex 生成：SysY 全部运算符词法测试
+// 覆盖：+ - * / % = < > <= >= == != ! && ||
+int identity(int x)
+{
+    return x;
+}
+int main()
+{
+    int a = 20;
+    int b = 6;
+    int c = 0;
+    int d = 1;
+    int array[4];
+    // 算术运算符：+ - * / %
+    c = a + b;
+    c = a - b;
+    c = a * b;
+    c = a / b;
+    c = a % b;
+    c = a + b * 2 - 3 / 1 + 7 % 4;
+    // 赋值运算符：=
+    a = c;
+    array[0] = a;
+    array[1] = array[0] + 1;
+    // 关系运算符：< > <= >= == !=
+    if (a < b)
+    {
+        c = c + 1;
+    }
+    if (a > b)
+    {
+        c = c + 2;
+    }
+    if (a <= b)
+    {
+        c = c + 4;
+    }
+    if (a >= b)
+    {
+        c = c + 8;
+    }
+    if (a == b)
+    {
+        c = c + 16;
+    }
+    if (a != b)
+    {
+        c = c + 32;
+    }
+    // 逻辑非：!
+    if (!d)
+    {
+        c = c + 64;
+    }
+    // 逻辑与和逻辑或：&& ||
+    if (a > b && c != 0)
+    {
+        c = c + 128;
+    }
+    if (a < b || c == 0)
+    {
+        c = c + 256;
+    }
+    if (!(a == b) && (a != b || d))
+    {
+        c = c + 512;
+    }
+    // 一元正负号：+ -
+    c = +a;
+    c = -b;
+    c = -(-a);
+    c = +(a + b);
+    // 浮点运算符也使用相同的运算符集合
+    float x = 3.5;
+    float y = 1.5;
+    float z = 0.0;
+    z = x + y;
+    z = x - y;
+    z = x * y;
+    z = x / y;
+    if (x > y && z != 0.0)
+    {
+        z = z + 1.0;
+    }
+    // while 中再次覆盖关系、逻辑、算术和赋值运算
+    while (a > 0 && c >= 0)
+    {
+        a = a - 1;
+        c = c % 10;
+    }
+    return identity(0);
+}
