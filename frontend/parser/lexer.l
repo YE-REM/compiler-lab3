@@ -41,6 +41,8 @@
 %option yyclass="Scanner"
 %option prefix="Yacc_"
 
+%x COMMENT
+
 DIGIT       [0-9]   
 NONZERO     [1-9]
 OCTDIGIT    [0-7]
@@ -71,12 +73,14 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
 */
 %}
 
-\n              {
-                    loc.lines(yyleng);
-                    loc.step();
-                }
+\n {
+    loc.lines(yyleng);
+    loc.step();
+}
+
 
 [ \f\r\v]+    { /* empty */ }
+
 [\t]    {
     loc.columns(handleTab());
 }
@@ -103,8 +107,29 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     // return YaccParser::make_SLASH_COMMENT(str, loc);  //思考为什么要把这一行注释掉
 }
 
-"/*""*/" {
-    //TODO(Lab1)：实现多行注释的处理，包括修改上方的匹配规则
+
+"/*" {
+    //多行注释处理如下
+    BEGIN(COMMENT);
+}
+
+<COMMENT>"*/" {
+    BEGIN(INITIAL);
+}
+
+<COMMENT>\n {
+    loc.lines(yyleng);
+    loc.step();
+}
+
+<COMMENT>. {
+    // 注释中的普通字符需要被匹配，但是不需要执行任何动作
+}
+
+<COMMENT><<EOF>> {
+    _parser.reportError(loc, std::string("Error: block comment missing '*/' "));
+    BEGIN(INITIAL);
+    RETT(END, loc);
 }
 
 

@@ -1,0 +1,20 @@
+Token                         Lexeme                        Property                      Line    Column  
+INT                           int                                                         2       0       
+IDENT                         main                          main                          2       4       
+LPAREN                        (                                                           2       8       
+RPAREN                        )                                                           2       9       
+LBRACE                        {                                                           3       0       
+INT                           int                                                         4       4       
+IDENT                         a                             a                             4       8       
+=                             =                                                           4       10      
+INT_CONST                     1                             1                             4       12      
+SEMICOLON                     ;                                                           4       13      
+
+
+ ./bin/compiler -lexer   -o testresult/blockcomment_error_te
+st1.txt  testcase/lexer/blockcomment_error.sy
+Input file: testcase/lexer/blockcomment_error.sy
+Step: -lexer
+Output: testresult/blockcomment_error_test1.txt
+Optimize level: 0
+msg: Error: block comment missing '*/' , error happened at: 7.1

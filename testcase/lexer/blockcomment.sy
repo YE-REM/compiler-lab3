@@ -1,0 +1,32 @@
+// 由 Codex 生成：多行注释专项测试
+int main()
+{
+    int a = 1; /* 同一行开始、同一行结束 */
+    /*
+       普通多行注释：第一行
+       普通多行注释：第二行
+       普通多行注释：第三行
+    */
+    int b = 2;
+    /**/
+    int empty_comment = 3;
+    /* 注释中可以出现运算符：+ - * / % = < > <= >= == != ! && || */
+    int operators_after_comment = a + b;
+    /*
+       注释中也可以出现关键字和数字：
+       int float if else while return 123 0x1p0 3.14
+       这些内容都不能生成 token。
+    */
+    int after_keyword_comment = operators_after_comment + 1;
+    // 注释可以紧贴在 token 之间
+    int/*中间的注释*/value = 4;
+    value = value/*运算符前的注释*/+/*运算符后的注释*/1;
+    /*
+       下面的内容用于观察注释结束后的位置是否正确。
+       注释结束后，next_value 应该从下一行开始扫描。
+    */
+    int next_value = value + 1;
+    /* 连续注释一 */ /* 连续注释二 */
+    int final_value = next_value + 1;
+    return final_value;
+}
