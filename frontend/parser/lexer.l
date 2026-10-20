@@ -150,12 +150,16 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
 "/"     { RETT(SLASH, loc) }
 "%"     { RETT(PERCENT, loc) }
 
-"int" {
+"int"   {
     RETT(INT, loc)
 }
 
 "float" {
     RETT(FLOAT, loc)
+}
+
+"void"  {
+    RETT(VOID, loc)
 }
 
 [A-Za-z_]+[A-Za-z0-9_]* {
@@ -196,8 +200,13 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
-        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
-        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
     } catch (const std::exception& e) {
         _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
         auto str = std::string(yytext);
@@ -208,8 +217,12 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
-        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
-        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
     } catch (const std::exception& e) {
         _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
         auto str = std::string(yytext);
@@ -222,8 +235,12 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
-        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
-        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
     } catch (const std::exception& e) {
         _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
         auto str = std::string(yytext);

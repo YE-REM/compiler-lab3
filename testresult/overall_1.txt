@@ -1,0 +1,674 @@
+Token                         Lexeme                        Property                      Line    Column  
+CONST                         const                                                       4       0       
+INT                           int                                                         4       6       
+IDENT                         CONST_DEC                     CONST_DEC                     4       10      
+=                             =                                                           4       20      
+INT_CONST                     12345                         12345                         4       22      
+SEMICOLON                     ;                                                           4       27      
+CONST                         const                                                       5       0       
+INT                           int                                                         5       6       
+IDENT                         CONST_OCT                     CONST_OCT                     5       10      
+=                             =                                                           5       20      
+INT_CONST                     01234567                      342391                        5       22      
+SEMICOLON                     ;                                                           5       30      
+CONST                         const                                                       6       0       
+INT                           int                                                         6       6       
+IDENT                         CONST_HEX                     CONST_HEX                     6       10      
+=                             =                                                           6       20      
+INT_CONST                     0xABCDEF                      11259375                      6       22      
+SEMICOLON                     ;                                                           6       30      
+CONST                         const                                                       7       0       
+FLOAT                         float                                                       7       6       
+IDENT                         CONST_DEC_FLOAT               CONST_DEC_FLOAT               7       12      
+=                             =                                                           7       28      
+FLOAT_CONST                   3.1415926                     3.14159                       7       30      
+SEMICOLON                     ;                                                           7       39      
+CONST                         const                                                       8       0       
+FLOAT                         float                                                       8       6       
+IDENT                         CONST_HEX_FLOAT               CONST_HEX_FLOAT               8       12      
+=                             =                                                           8       28      
+FLOAT_CONST                   0x1.8p+1                      3                             8       30      
+SEMICOLON                     ;                                                           8       38      
+VOID                          void                                                        10      0       
+IDENT                         consume                       consume                       10      5       
+LPAREN                        (                                                           10      12      
+INT                           int                                                         10      13      
+IDENT                         value                         value                         10      17      
+RPAREN                        )                                                           10      22      
+LBRACE                        {                                                           11      0       
+IF                            if                                                          12      4       
+LPAREN                        (                                                           12      7       
+IDENT                         value                         value                         12      8       
+!=                            !=                                                          12      14      
+INT_CONST                     0                             0                             12      17      
+RPAREN                        )                                                           12      18      
+LBRACE                        {                                                           13      4       
+RETURN                        return                                                      14      8       
+SEMICOLON                     ;                                                           14      14      
+RBRACE                        }                                                           15      4       
+RETURN                        return                                                      16      4       
+SEMICOLON                     ;                                                           16      10      
+RBRACE                        }                                                           17      0       
+FLOAT                         float                                                       19      0       
+IDENT                         scale                         scale                         19      6       
+LPAREN                        (                                                           19      11      
+FLOAT                         float                                                       19      12      
+IDENT                         value                         value                         19      18      
+COMMA                         ,                                                           19      23      
+FLOAT                         float                                                       19      25      
+IDENT                         factor                        factor                        19      31      
+RPAREN                        )                                                           19      37      
+LBRACE                        {                                                           20      0       
+RETURN                        return                                                      21      4       
+IDENT                         value                         value                         21      11      
+*                             *                                                           21      17      
+IDENT                         factor                        factor                        21      19      
+SEMICOLON                     ;                                                           21      25      
+RBRACE                        }                                                           22      0       
+INT                           int                                                         24      0       
+IDENT                         main                          main                          24      4       
+LPAREN                        (                                                           24      8       
+RPAREN                        )                                                           24      9       
+LBRACE                        {                                                           25      0       
+INT                           int                                                         27      4       
+IDENT                         dec_zero                      dec_zero                      27      8       
+=                             =                                                           27      17      
+INT_CONST                     0                             0                             27      19      
+SEMICOLON                     ;                                                           27      20      
+INT                           int                                                         28      4       
+IDENT                         dec_one                       dec_one                       28      8       
+=                             =                                                           28      16      
+INT_CONST                     1                             1                             28      18      
+SEMICOLON                     ;                                                           28      19      
+INT                           int                                                         29      4       
+IDENT                         dec_value                     dec_value                     29      8       
+=                             =                                                           29      18      
+INT_CONST                     12345                         12345                         29      20      
+SEMICOLON                     ;                                                           29      25      
+INT                           int                                                         30      4       
+IDENT                         dec_max                       dec_max                       30      8       
+=                             =                                                           30      16      
+INT_CONST                     2147483647                    2147483647                    30      18      
+SEMICOLON                     ;                                                           30      28      
+INT                           int                                                         33      4       
+IDENT                         oct_zero                      oct_zero                      33      8       
+=                             =                                                           33      17      
+INT_CONST                     00                            0                             33      19      
+SEMICOLON                     ;                                                           33      21      
+INT                           int                                                         34      4       
+IDENT                         oct_one                       oct_one                       34      8       
+=                             =                                                           34      16      
+INT_CONST                     01                            1                             34      18      
+SEMICOLON                     ;                                                           34      20      
+INT                           int                                                         35      4       
+IDENT                         oct_seven                     oct_seven                     35      8       
+=                             =                                                           35      18      
+INT_CONST                     07                            7                             35      20      
+SEMICOLON                     ;                                                           35      22      
+INT                           int                                                         36      4       
+IDENT                         oct_eight                     oct_eight                     36      8       
+=                             =                                                           36      18      
+INT_CONST                     010                           8                             36      20      
+SEMICOLON                     ;                                                           36      23      
+INT                           int                                                         37      4       
+IDENT                         oct_value                     oct_value                     37      8       
+=                             =                                                           37      18      
+INT_CONST                     01234567                      342391                        37      20      
+SEMICOLON                     ;                                                           37      28      
+INT                           int                                                         38      4       
+IDENT                         oct_max                       oct_max                       38      8       
+=                             =                                                           38      16      
+INT_CONST                     017777777777                  2147483647                    38      18      
+SEMICOLON                     ;                                                           38      30      
+INT                           int                                                         41      4       
+IDENT                         hex_zero                      hex_zero                      41      8       
+=                             =                                                           41      17      
+INT_CONST                     0x0                           0                             41      19      
+SEMICOLON                     ;                                                           41      22      
+INT                           int                                                         42      4       
+IDENT                         hex_one                       hex_one                       42      8       
+=                             =                                                           42      16      
+INT_CONST                     0x1                           1                             42      18      
+SEMICOLON                     ;                                                           42      21      
+INT                           int                                                         43      4       
+IDENT                         hex_lower                     hex_lower                     43      8       
+=                             =                                                           43      18      
+INT_CONST                     0xabcdef                      11259375                      43      20      
+SEMICOLON                     ;                                                           43      28      
+INT                           int                                                         44      4       
+IDENT                         hex_upper                     hex_upper                     44      8       
+=                             =                                                           44      18      
+INT_CONST                     0XABCDEF                      11259375                      44      20      
+SEMICOLON                     ;                                                           44      28      
+INT                           int                                                         45      4       
+IDENT                         hex_value                     hex_value                     45      8       
+=                             =                                                           45      18      
+INT_CONST                     0x12345678                    305419896                     45      20      
+SEMICOLON                     ;                                                           45      30      
+INT                           int                                                         46      4       
+IDENT                         hex_max                       hex_max                       46      8       
+=                             =                                                           46      16      
+INT_CONST                     0x7fffffff                    2147483647                    46      18      
+SEMICOLON                     ;                                                           46      28      
+INT                           int                                                         49      4       
+IDENT                         ll_dec                        ll_dec                        49      8       
+=                             =                                                           49      15      
+LL_CONST                      2147483648                    2147483648                    49      17      
+SEMICOLON                     ;                                                           49      27      
+INT                           int                                                         50      4       
+IDENT                         ll_oct                        ll_oct                        50      8       
+=                             =                                                           50      15      
+LL_CONST                      020000000000                  2147483648                    50      17      
+SEMICOLON                     ;                                                           50      29      
+INT                           int                                                         51      4       
+IDENT                         ll_hex                        ll_hex                        51      8       
+=                             =                                                           51      15      
+LL_CONST                      0x80000000                    2147483648                    51      17      
+SEMICOLON                     ;                                                           51      27      
+INT                           int                                                         52      4       
+IDENT                         ll_neg_dec                    ll_neg_dec                    52      8       
+=                             =                                                           52      19      
+-                             -                                                           52      21      
+LL_CONST                      2147483648                    2147483648                    52      22      
+SEMICOLON                     ;                                                           52      32      
+INT                           int                                                         53      4       
+IDENT                         ll_neg_oct                    ll_neg_oct                    53      8       
+=                             =                                                           53      19      
+-                             -                                                           53      21      
+LL_CONST                      020000000000                  2147483648                    53      22      
+SEMICOLON                     ;                                                           53      34      
+INT                           int                                                         54      4       
+IDENT                         ll_neg_hex                    ll_neg_hex                    54      8       
+=                             =                                                           54      19      
+-                             -                                                           54      21      
+LL_CONST                      0x80000000                    2147483648                    54      22      
+SEMICOLON                     ;                                                           54      32      
+FLOAT                         float                                                       57      4       
+IDENT                         dec_float_zero                dec_float_zero                57      10      
+=                             =                                                           57      25      
+FLOAT_CONST                   0.0                           0                             57      27      
+SEMICOLON                     ;                                                           57      30      
+FLOAT                         float                                                       58      4       
+IDENT                         dec_float_basic               dec_float_basic               58      10      
+=                             =                                                           58      26      
+FLOAT_CONST                   3.14                          3.14                          58      28      
+SEMICOLON                     ;                                                           58      32      
+FLOAT                         float                                                       59      4       
+IDENT                         dec_float_leading_dot         dec_float_leading_dot         59      10      
+=                             =                                                           59      32      
+FLOAT_CONST                   .5                            0.5                           59      34      
+SEMICOLON                     ;                                                           59      36      
+FLOAT                         float                                                       60      4       
+IDENT                         dec_float_trailing_dot        dec_float_trailing_dot        60      10      
+=                             =                                                           60      33      
+FLOAT_CONST                   5.                            5                             60      35      
+SEMICOLON                     ;                                                           60      37      
+FLOAT                         float                                                       61      4       
+IDENT                         dec_float_small               dec_float_small               61      10      
+=                             =                                                           61      26      
+FLOAT_CONST                   0.000001                      1e-06                         61      28      
+SEMICOLON                     ;                                                           61      36      
+FLOAT                         float                                                       62      4       
+IDENT                         dec_float_exp                 dec_float_exp                 62      10      
+=                             =                                                           62      24      
+FLOAT_CONST                   1e10                          1e+10                         62      26      
+SEMICOLON                     ;                                                           62      30      
+FLOAT                         float                                                       63      4       
+IDENT                         dec_float_exp_negative        dec_float_exp_negative        63      10      
+=                             =                                                           63      33      
+FLOAT_CONST                   1.5e-3                        0.0015                        63      35      
+SEMICOLON                     ;                                                           63      41      
+FLOAT                         float                                                       64      4       
+IDENT                         dec_float_exp_upper           dec_float_exp_upper           64      10      
+=                             =                                                           64      30      
+FLOAT_CONST                   2.5E+4                        25000                         64      32      
+SEMICOLON                     ;                                                           64      38      
+FLOAT                         float                                                       65      4       
+IDENT                         dec_float_dot_exp             dec_float_dot_exp             65      10      
+=                             =                                                           65      28      
+FLOAT_CONST                   3.e+2                         300                           65      30      
+SEMICOLON                     ;                                                           65      35      
+FLOAT                         float                                                       66      4       
+IDENT                         dec_float_leading_dot_exp     dec_float_leading_dot_exp     66      10      
+=                             =                                                           66      36      
+FLOAT_CONST                   .25E-2                        0.0025                        66      38      
+SEMICOLON                     ;                                                           66      44      
+FLOAT                         float                                                       69      4       
+IDENT                         dec_float_leading_zero        dec_float_leading_zero        69      10      
+=                             =                                                           69      33      
+FLOAT_CONST                   012.3                         12.3                          69      35      
+SEMICOLON                     ;                                                           69      40      
+FLOAT                         float                                                       70      4       
+IDENT                         dec_float_leading_zero...     dec_float_leading_zero_exp    70      10      
+=                             =                                                           70      37      
+FLOAT_CONST                   012e2                         1200                          70      39      
+SEMICOLON                     ;                                                           70      44      
+FLOAT                         float                                                       73      4       
+IDENT                         hex_float_one                 hex_float_one                 73      10      
+=                             =                                                           73      24      
+FLOAT_CONST                   0x1p0                         1                             73      26      
+SEMICOLON                     ;                                                           73      31      
+FLOAT                         float                                                       74      4       
+IDENT                         hex_float_integer             hex_float_integer             74      10      
+=                             =                                                           74      28      
+FLOAT_CONST                   0x10p0                        16                            74      30      
+SEMICOLON                     ;                                                           74      36      
+FLOAT                         float                                                       75      4       
+IDENT                         hex_float_fraction            hex_float_fraction            75      10      
+=                             =                                                           75      29      
+FLOAT_CONST                   0x1.8p0                       1.5                           75      31      
+SEMICOLON                     ;                                                           75      38      
+FLOAT                         float                                                       76      4       
+IDENT                         hex_float_positive_exp        hex_float_positive_exp        76      10      
+=                             =                                                           76      33      
+FLOAT_CONST                   0x1.8p+1                      3                             76      35      
+SEMICOLON                     ;                                                           76      43      
+FLOAT                         float                                                       77      4       
+IDENT                         hex_float_negative_exp        hex_float_negative_exp        77      10      
+=                             =                                                           77      33      
+FLOAT_CONST                   0x1.8p-1                      0.75                          77      35      
+SEMICOLON                     ;                                                           77      43      
+FLOAT                         float                                                       78      4       
+IDENT                         hex_float_leading_dot         hex_float_leading_dot         78      10      
+=                             =                                                           78      32      
+FLOAT_CONST                   0x.8p0                        0.5                           78      34      
+SEMICOLON                     ;                                                           78      40      
+FLOAT                         float                                                       79      4       
+IDENT                         hex_float_trailing_dot        hex_float_trailing_dot        79      10      
+=                             =                                                           79      33      
+FLOAT_CONST                   0x1.p0                        1                             79      35      
+SEMICOLON                     ;                                                           79      41      
+FLOAT                         float                                                       80      4       
+IDENT                         hex_float_upper               hex_float_upper               80      10      
+=                             =                                                           80      26      
+FLOAT_CONST                   0XABCp2                       10992                         80      28      
+SEMICOLON                     ;                                                           80      35      
+INT                           int                                                         83      4       
+IDENT                         a                             a                             83      8       
+=                             =                                                           83      10      
+INT_CONST                     20                            20                            83      12      
+SEMICOLON                     ;                                                           83      14      
+INT                           int                                                         84      4       
+IDENT                         b                             b                             84      8       
+=                             =                                                           84      10      
+INT_CONST                     6                             6                             84      12      
+SEMICOLON                     ;                                                           84      13      
+INT                           int                                                         85      4       
+IDENT                         result                        result                        85      8       
+=                             =                                                           85      15      
+INT_CONST                     0                             0                             85      17      
+SEMICOLON                     ;                                                           85      18      
+IDENT                         result                        result                        87      4       
+=                             =                                                           87      11      
+IDENT                         a                             a                             87      13      
++                             +                                                           87      15      
+IDENT                         b                             b                             87      17      
+SEMICOLON                     ;                                                           87      18      
+IDENT                         result                        result                        88      4       
+=                             =                                                           88      11      
+IDENT                         a                             a                             88      13      
+-                             -                                                           88      15      
+IDENT                         b                             b                             88      17      
+SEMICOLON                     ;                                                           88      18      
+IDENT                         result                        result                        89      4       
+=                             =                                                           89      11      
+IDENT                         a                             a                             89      13      
+*                             *                                                           89      15      
+IDENT                         b                             b                             89      17      
+SEMICOLON                     ;                                                           89      18      
+IDENT                         result                        result                        90      4       
+=                             =                                                           90      11      
+IDENT                         a                             a                             90      13      
+/                             /                                                           90      15      
+IDENT                         b                             b                             90      17      
+SEMICOLON                     ;                                                           90      18      
+IDENT                         result                        result                        91      4       
+=                             =                                                           91      11      
+IDENT                         a                             a                             91      13      
+%                             %                                                           91      15      
+IDENT                         b                             b                             91      17      
+SEMICOLON                     ;                                                           91      18      
+IDENT                         result                        result                        92      4       
+=                             =                                                           92      11      
+IDENT                         a                             a                             92      13      
++                             +                                                           92      15      
+IDENT                         b                             b                             92      17      
+*                             *                                                           92      19      
+INT_CONST                     2                             2                             92      21      
+-                             -                                                           92      23      
+INT_CONST                     3                             3                             92      25      
+/                             /                                                           92      27      
+INT_CONST                     1                             1                             92      29      
++                             +                                                           92      31      
+INT_CONST                     7                             7                             92      33      
+%                             %                                                           92      35      
+INT_CONST                     4                             4                             92      37      
+SEMICOLON                     ;                                                           92      38      
+IDENT                         result                        result                        93      4       
+=                             =                                                           93      11      
++                             +                                                           93      13      
+IDENT                         a                             a                             93      14      
+SEMICOLON                     ;                                                           93      15      
+IDENT                         result                        result                        94      4       
+=                             =                                                           94      11      
+-                             -                                                           94      13      
+IDENT                         b                             b                             94      14      
+SEMICOLON                     ;                                                           94      15      
+IDENT                         result                        result                        95      4       
+=                             =                                                           95      11      
+-                             -                                                           95      13      
+LPAREN                        (                                                           95      14      
+-                             -                                                           95      15      
+IDENT                         a                             a                             95      16      
+RPAREN                        )                                                           95      17      
+SEMICOLON                     ;                                                           95      18      
+IF                            if                                                          98      4       
+LPAREN                        (                                                           98      7       
+IDENT                         a                             a                             98      8       
+<                             <                                                           98      10      
+IDENT                         b                             b                             98      12      
+RPAREN                        )                                                           98      13      
+LBRACE                        {                                                           99      4       
+IDENT                         result                        result                        100     8       
+=                             =                                                           100     15      
+IDENT                         result                        result                        100     17      
++                             +                                                           100     24      
+INT_CONST                     1                             1                             100     26      
+SEMICOLON                     ;                                                           100     27      
+RBRACE                        }                                                           101     4       
+IF                            if                                                          103     4       
+LPAREN                        (                                                           103     7       
+IDENT                         a                             a                             103     8       
+>                             >                                                           103     10      
+IDENT                         b                             b                             103     12      
+RPAREN                        )                                                           103     13      
+LBRACE                        {                                                           104     4       
+IDENT                         result                        result                        105     8       
+=                             =                                                           105     15      
+IDENT                         result                        result                        105     17      
++                             +                                                           105     24      
+INT_CONST                     2                             2                             105     26      
+SEMICOLON                     ;                                                           105     27      
+RBRACE                        }                                                           106     4       
+IF                            if                                                          108     4       
+LPAREN                        (                                                           108     7       
+IDENT                         a                             a                             108     8       
+<=                            <=                                                          108     10      
+IDENT                         b                             b                             108     13      
+RPAREN                        )                                                           108     14      
+LBRACE                        {                                                           109     4       
+IDENT                         result                        result                        110     8       
+=                             =                                                           110     15      
+IDENT                         result                        result                        110     17      
++                             +                                                           110     24      
+INT_CONST                     4                             4                             110     26      
+SEMICOLON                     ;                                                           110     27      
+RBRACE                        }                                                           111     4       
+IF                            if                                                          113     4       
+LPAREN                        (                                                           113     7       
+IDENT                         a                             a                             113     8       
+>=                            >=                                                          113     10      
+IDENT                         b                             b                             113     13      
+RPAREN                        )                                                           113     14      
+LBRACE                        {                                                           114     4       
+IDENT                         result                        result                        115     8       
+=                             =                                                           115     15      
+IDENT                         result                        result                        115     17      
++                             +                                                           115     24      
+INT_CONST                     8                             8                             115     26      
+SEMICOLON                     ;                                                           115     27      
+RBRACE                        }                                                           116     4       
+IF                            if                                                          118     4       
+LPAREN                        (                                                           118     7       
+IDENT                         a                             a                             118     8       
+==                            ==                                                          118     10      
+IDENT                         b                             b                             118     13      
+RPAREN                        )                                                           118     14      
+LBRACE                        {                                                           119     4       
+IDENT                         result                        result                        120     8       
+=                             =                                                           120     15      
+IDENT                         result                        result                        120     17      
++                             +                                                           120     24      
+INT_CONST                     16                            16                            120     26      
+SEMICOLON                     ;                                                           120     28      
+RBRACE                        }                                                           121     4       
+IF                            if                                                          123     4       
+LPAREN                        (                                                           123     7       
+IDENT                         a                             a                             123     8       
+!=                            !=                                                          123     10      
+IDENT                         b                             b                             123     13      
+RPAREN                        )                                                           123     14      
+LBRACE                        {                                                           124     4       
+IDENT                         result                        result                        125     8       
+=                             =                                                           125     15      
+IDENT                         result                        result                        125     17      
++                             +                                                           125     24      
+INT_CONST                     32                            32                            125     26      
+SEMICOLON                     ;                                                           125     28      
+RBRACE                        }                                                           126     4       
+IF                            if                                                          128     4       
+LPAREN                        (                                                           128     7       
+!                             !                                                           128     8       
+INT_CONST                     0                             0                             128     9       
+RPAREN                        )                                                           128     10      
+LBRACE                        {                                                           129     4       
+IDENT                         result                        result                        130     8       
+=                             =                                                           130     15      
+IDENT                         result                        result                        130     17      
++                             +                                                           130     24      
+INT_CONST                     64                            64                            130     26      
+SEMICOLON                     ;                                                           130     28      
+RBRACE                        }                                                           131     4       
+IF                            if                                                          133     4       
+LPAREN                        (                                                           133     7       
+IDENT                         a                             a                             133     8       
+>                             >                                                           133     10      
+IDENT                         b                             b                             133     12      
+&&                            &&                                                          133     14      
+IDENT                         result                        result                        133     17      
+!=                            !=                                                          133     24      
+INT_CONST                     0                             0                             133     27      
+RPAREN                        )                                                           133     28      
+LBRACE                        {                                                           134     4       
+IDENT                         result                        result                        135     8       
+=                             =                                                           135     15      
+IDENT                         result                        result                        135     17      
++                             +                                                           135     24      
+INT_CONST                     128                           128                           135     26      
+SEMICOLON                     ;                                                           135     29      
+RBRACE                        }                                                           136     4       
+IF                            if                                                          138     4       
+LPAREN                        (                                                           138     7       
+IDENT                         a                             a                             138     8       
+<                             <                                                           138     10      
+IDENT                         b                             b                             138     12      
+||                            ||                                                          138     14      
+IDENT                         result                        result                        138     17      
+==                            ==                                                          138     24      
+INT_CONST                     0                             0                             138     27      
+RPAREN                        )                                                           138     28      
+LBRACE                        {                                                           139     4       
+IDENT                         result                        result                        140     8       
+=                             =                                                           140     15      
+IDENT                         result                        result                        140     17      
++                             +                                                           140     24      
+INT_CONST                     256                           256                           140     26      
+SEMICOLON                     ;                                                           140     29      
+RBRACE                        }                                                           141     4       
+IF                            if                                                          143     4       
+LPAREN                        (                                                           143     7       
+!                             !                                                           143     8       
+LPAREN                        (                                                           143     9       
+IDENT                         a                             a                             143     10      
+==                            ==                                                          143     12      
+IDENT                         b                             b                             143     15      
+RPAREN                        )                                                           143     16      
+&&                            &&                                                          143     18      
+LPAREN                        (                                                           143     21      
+IDENT                         a                             a                             143     22      
+!=                            !=                                                          143     24      
+IDENT                         b                             b                             143     27      
+||                            ||                                                          143     29      
+!                             !                                                           143     32      
+INT_CONST                     0                             0                             143     33      
+RPAREN                        )                                                           143     34      
+RPAREN                        )                                                           143     35      
+LBRACE                        {                                                           144     4       
+IDENT                         result                        result                        145     8       
+=                             =                                                           145     15      
+IDENT                         result                        result                        145     17      
++                             +                                                           145     24      
+INT_CONST                     512                           512                           145     26      
+SEMICOLON                     ;                                                           145     29      
+RBRACE                        }                                                           146     4       
+FLOAT                         float                                                       149     4       
+IDENT                         x                             x                             149     10      
+=                             =                                                           149     12      
+FLOAT_CONST                   3.5                           3.5                           149     14      
+SEMICOLON                     ;                                                           149     17      
+FLOAT                         float                                                       150     4       
+IDENT                         y                             y                             150     10      
+=                             =                                                           150     12      
+FLOAT_CONST                   1.5                           1.5                           150     14      
+SEMICOLON                     ;                                                           150     17      
+FLOAT                         float                                                       151     4       
+IDENT                         z                             z                             151     10      
+=                             =                                                           151     12      
+FLOAT_CONST                   0.0                           0                             151     14      
+SEMICOLON                     ;                                                           151     17      
+IDENT                         z                             z                             153     4       
+=                             =                                                           153     6       
+IDENT                         x                             x                             153     8       
++                             +                                                           153     10      
+IDENT                         y                             y                             153     12      
+SEMICOLON                     ;                                                           153     13      
+IDENT                         z                             z                             154     4       
+=                             =                                                           154     6       
+IDENT                         x                             x                             154     8       
+-                             -                                                           154     10      
+IDENT                         y                             y                             154     12      
+SEMICOLON                     ;                                                           154     13      
+IDENT                         z                             z                             155     4       
+=                             =                                                           155     6       
+IDENT                         x                             x                             155     8       
+*                             *                                                           155     10      
+IDENT                         y                             y                             155     12      
+SEMICOLON                     ;                                                           155     13      
+IDENT                         z                             z                             156     4       
+=                             =                                                           156     6       
+IDENT                         x                             x                             156     8       
+/                             /                                                           156     10      
+IDENT                         y                             y                             156     12      
+SEMICOLON                     ;                                                           156     13      
+IF                            if                                                          157     4       
+LPAREN                        (                                                           157     7       
+IDENT                         x                             x                             157     8       
+>=                            >=                                                          157     10      
+IDENT                         y                             y                             157     13      
+&&                            &&                                                          157     15      
+IDENT                         z                             z                             157     18      
+!=                            !=                                                          157     20      
+FLOAT_CONST                   0.0                           0                             157     23      
+RPAREN                        )                                                           157     26      
+LBRACE                        {                                                           158     4       
+IDENT                         z                             z                             159     8       
+=                             =                                                           159     10      
+IDENT                         z                             z                             159     12      
++                             +                                                           159     14      
+IDENT                         CONST_HEX_FLOAT               CONST_HEX_FLOAT               159     16      
+SEMICOLON                     ;                                                           159     31      
+RBRACE                        }                                                           160     4       
+IDENT                         z                             z                             162     4       
+=                             =                                                           162     6       
+IDENT                         scale                         scale                         162     8       
+LPAREN                        (                                                           162     13      
+IDENT                         CONST_DEC_FLOAT               CONST_DEC_FLOAT               162     14      
+COMMA                         ,                                                           162     29      
+FLOAT_CONST                   2.0                           2                             162     31      
+RPAREN                        )                                                           162     34      
+SEMICOLON                     ;                                                           162     35      
+INT                           int                                                         165     4       
+IDENT                         array                         array                         165     8       
+LBRACKET                      [                                                           165     13      
+INT_CONST                     010                           8                             165     14      
+RBRACKET                      ]                                                           165     17      
+LBRACKET                      [                                                           165     18      
+INT_CONST                     0x10                          16                            165     19      
+RBRACKET                      ]                                                           165     23      
+SEMICOLON                     ;                                                           165     24      
+INT                           int                                                         166     4       
+IDENT                         i                             i                             166     8       
+=                             =                                                           166     10      
+INT_CONST                     0                             0                             166     12      
+SEMICOLON                     ;                                                           166     13      
+FOR                           for                                                         168     4       
+LPAREN                        (                                                           168     8       
+IDENT                         i                             i                             168     9       
+=                             =                                                           168     11      
+INT_CONST                     0                             0                             168     13      
+SEMICOLON                     ;                                                           168     14      
+IDENT                         i                             i                             168     16      
+<                             <                                                           168     18      
+INT_CONST                     3                             3                             168     20      
+SEMICOLON                     ;                                                           168     21      
+IDENT                         i                             i                             168     23      
+=                             =                                                           168     25      
+IDENT                         i                             i                             168     27      
++                             +                                                           168     29      
+INT_CONST                     1                             1                             168     31      
+RPAREN                        )                                                           168     32      
+LBRACE                        {                                                           169     4       
+IDENT                         array                         array                         170     8       
+LBRACKET                      [                                                           170     13      
+IDENT                         i                             i                             170     14      
+RBRACKET                      ]                                                           170     15      
+LBRACKET                      [                                                           170     16      
+INT_CONST                     0                             0                             170     17      
+RBRACKET                      ]                                                           170     18      
+=                             =                                                           170     20      
+IDENT                         i                             i                             170     22      
+SEMICOLON                     ;                                                           170     23      
+IF                            if                                                          171     8       
+LPAREN                        (                                                           171     11      
+IDENT                         i                             i                             171     12      
+==                            ==                                                          171     14      
+INT_CONST                     1                             1                             171     17      
+RPAREN                        )                                                           171     18      
+LBRACE                        {                                                           172     8       
+CONTINUE                      continue                                                    173     12      
+SEMICOLON                     ;                                                           173     20      
+RBRACE                        }                                                           174     8       
+RBRACE                        }                                                           175     4       
+WHILE                         while                                                       177     4       
+LPAREN                        (                                                           177     10      
+IDENT                         i                             i                             177     11      
+>                             >                                                           177     13      
+INT_CONST                     0                             0                             177     15      
+RPAREN                        )                                                           177     16      
+LBRACE                        {                                                           178     4       
+IDENT                         i                             i                             179     8       
+=                             =                                                           179     10      
+IDENT                         i                             i                             179     12      
+-                             -                                                           179     14      
+INT_CONST                     1                             1                             179     16      
+SEMICOLON                     ;                                                           179     17      
+IF                            if                                                          180     8       
+LPAREN                        (                                                           180     11      
+IDENT                         i                             i                             180     12      
+==                            ==                                                          180     14      
+INT_CONST                     0                             0                             180     17      
+RPAREN                        )                                                           180     18      
+LBRACE                        {                                                           181     8       
+BREAK                         break                                                       182     12      
+SEMICOLON                     ;                                                           182     17      
+RBRACE                        }                                                           183     8       
+RBRACE                        }                                                           184     4       
+IDENT                         consume                       consume                       194     4       
+LPAREN                        (                                                           194     11      
+IDENT                         result                        result                        194     12      
+RPAREN                        )                                                           194     18      
+SEMICOLON                     ;                                                           194     19      
+RETURN                        return                                                      195     4       
+INT_CONST                     0                             0                             195     11      
+SEMICOLON                     ;                                                           195     12      
+RBRACE                        }                                                           196     0       
