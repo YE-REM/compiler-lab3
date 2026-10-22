@@ -32,12 +32,33 @@
     long long convertToInt(const char* str, const char end, bool& isLongLong);
     float convertToFloatDec(const char* str);
     float convertToFloatHex(const char* str);
+
+    // 目前十进制整型字面量无法识别0，8 16进制也不支持，为了后续处理方便，定义区就分开处理
 %}
 
 %option c++
 %option noyywrap debug
 %option yyclass="Scanner"
 %option prefix="Yacc_"
+
+%x COMMENT
+
+DIGIT       [0-9]   
+NONZERO     [1-9]
+OCTDIGIT    [0-7]
+HEXDIGIT    [0-9A-Fa-f]
+
+DECINT      0|{NONZERO}{DIGIT}*
+OCTINT      0{OCTDIGIT}+
+HEXINT      0[xX]{HEXDIGIT}+
+
+DECFRAC     ({DIGIT}+("."{DIGIT}*)|("."{DIGIT}+))
+DECEXP      [eE][+-]?{DIGIT}+
+DECFLOAT    ({DECFRAC}{DECEXP}?|{DIGIT}+{DECEXP})
+
+HEXFRAC     ({HEXDIGIT}+"."{HEXDIGIT}*|"."{HEXDIGIT}+)
+HEXEXP      [pP][+-]?{DIGIT}+
+HEXFLOAT    0[xX]({HEXFRAC}|{HEXDIGIT}+){HEXEXP}
 
 %%
 
@@ -52,12 +73,14 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
 */
 %}
 
-\n              {
-                    loc.lines(yyleng);
-                    loc.step();
-                }
+\n {
+    loc.lines(yyleng);
+    loc.step();
+}
+
 
 [ \f\r\v]+    { /* empty */ }
+
 [\t]    {
     loc.columns(handleTab());
 }
@@ -84,8 +107,59 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     // return YaccParser::make_SLASH_COMMENT(str, loc);  //思考为什么要把这一行注释掉
 }
 
-"/*""*/" {
-    //TODO(Lab1)：实现多行注释的处理，包括修改上方的匹配规则
+
+"/*" {
+    //多行注释处理如下
+    BEGIN(COMMENT);
+}
+
+<COMMENT>"*/" {
+    BEGIN(INITIAL);
+}
+
+<COMMENT>\n {
+    loc.lines(yyleng);
+    loc.step();
+}
+
+<COMMENT>. {
+    // 注释中的普通字符需要被匹配，但是不需要执行任何动作
+}
+
+<COMMENT><<EOF>> {
+    _parser.reportError(loc, std::string("Error: block comment missing '*/' "));
+    BEGIN(INITIAL);
+    RETT(END, loc);
+}
+
+
+"=="    { RETT(EQ, loc) }
+"!="    { RETT(NE, loc) }
+"<="    { RETT(LE, loc) }
+">="    { RETT(GE, loc) }
+"&&"    { RETT(AND, loc) }
+"||"    { RETT(OR, loc) }
+
+"="     { RETT(ASSIGN, loc) }
+"<"     { RETT(LT, loc) }
+">"     { RETT(GT, loc) }
+"!"     { RETT(NOT, loc) }
+"+"     { RETT(PLUS, loc) }
+"-"     { RETT(MINUS, loc) }
+"*"     { RETT(STAR, loc) }
+"/"     { RETT(SLASH, loc) }
+"%"     { RETT(PERCENT, loc) }
+
+"int"   {
+    RETT(INT, loc)
+}
+
+"float" {
+    RETT(FLOAT, loc)
+}
+
+"void"  {
+    RETT(VOID, loc)
 }
 
 [A-Za-z_]+[A-Za-z0-9_]* {
@@ -99,12 +173,74 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
     return YaccParser::make_STR_CONST(str, loc); 
 }
 
-[1-9][0-9]* {
+{HEXFLOAT} {
+    try {
+        float result = convertToFloatHex(yytext);
+        return YaccParser::make_FLOAT_CONST(result, loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal float: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+
+{DECFLOAT} {
+    //框架提供的浮点数处理接口类似
+    try {
+        float result = convertToFloatDec(yytext);
+        return YaccParser::make_FLOAT_CONST(result, loc);
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing decimal float: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+
+{HEXINT} {
     try {
         bool isLL = false;
         long long result = convertToInt(yytext, '\0', isLL);
-        // if (isLL) return YaccParser::make_LL_CONST(result, loc);
-        return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+{OCTINT} {
+    try {
+        bool isLL = false;
+        long long result = convertToInt(yytext, '\0', isLL);
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
+    } catch (const std::exception& e) {
+        _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
+        auto str = std::string(yytext);
+        return YaccParser::make_ERR_TOKEN(str, loc);
+    }
+}
+
+{DECINT} {
+    //原来的方式无法识别单独的0，直接修改正则表达式不利于处理8 16进制 利用最长匹配原则
+    try {
+        bool isLL = false;
+        long long result = convertToInt(yytext, '\0', isLL);
+        if (isLL) {
+            return YaccParser::make_LL_CONST(result, loc);
+        }
+        else{
+            return YaccParser::make_INT_CONST(static_cast<int>(result), loc);
+        }
     } catch (const std::exception& e) {
         _parser.reportError(loc, std::string("Error parsing hexadecimal int: ") + e.what());
         auto str = std::string(yytext);
@@ -122,6 +258,7 @@ TODO(Lab1)：参考SysY2022的定义，实现更多的词法，如浮点数、�
 <<EOF>>         { RETT(END, loc); }
 
 %%
+
 
 int handleTab()
 {

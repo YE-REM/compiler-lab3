@@ -1,0 +1,196 @@
+// 由 Codex 生成：Lab1 词法分析器综合测试
+// 覆盖类型关键字、整数、LL_CONST、浮点数、运算符和注释。
+
+const int CONST_DEC = 12345;
+const int CONST_OCT = 01234567;
+const int CONST_HEX = 0xABCDEF;
+const float CONST_DEC_FLOAT = 3.1415926;
+const float CONST_HEX_FLOAT = 0x1.8p+1;
+
+void consume(int value)
+{
+    if (value != 0)
+    {
+        return;
+    }
+    return;
+}
+
+float scale(float value, float factor)
+{
+    return value * factor;
+}
+
+int main()
+{
+    // ==================== 十进制整数 ====================
+    int dec_zero = 0;
+    int dec_one = 1;
+    int dec_value = 12345;
+    int dec_max = 2147483647;
+
+    // ==================== 八进制整数 ====================
+    int oct_zero = 00;
+    int oct_one = 01;
+    int oct_seven = 07;
+    int oct_eight = 010;
+    int oct_value = 01234567;
+    int oct_max = 017777777777;
+
+    // ==================== 十六进制整数 ====================
+    int hex_zero = 0x0;
+    int hex_one = 0x1;
+    int hex_lower = 0xabcdef;
+    int hex_upper = 0XABCDEF;
+    int hex_value = 0x12345678;
+    int hex_max = 0x7fffffff;
+
+    // ==================== 大整型 LL_CONST ====================
+    int ll_dec = 2147483648;
+    int ll_oct = 020000000000;
+    int ll_hex = 0x80000000;
+    int ll_neg_dec = -2147483648;
+    int ll_neg_oct = -020000000000;
+    int ll_neg_hex = -0x80000000;
+
+    // ==================== 十进制浮点 ====================
+    float dec_float_zero = 0.0;
+    float dec_float_basic = 3.14;
+    float dec_float_leading_dot = .5;
+    float dec_float_trailing_dot = 5.;
+    float dec_float_small = 0.000001;
+    float dec_float_exp = 1e10;
+    float dec_float_exp_negative = 1.5e-3;
+    float dec_float_exp_upper = 2.5E+4;
+    float dec_float_dot_exp = 3.e+2;
+    float dec_float_leading_dot_exp = .25E-2;
+
+    // 带前导零的浮点仍然属于十进制浮点
+    float dec_float_leading_zero = 012.3;
+    float dec_float_leading_zero_exp = 012e2;
+
+    // ==================== 十六进制浮点 ====================
+    float hex_float_one = 0x1p0;
+    float hex_float_integer = 0x10p0;
+    float hex_float_fraction = 0x1.8p0;
+    float hex_float_positive_exp = 0x1.8p+1;
+    float hex_float_negative_exp = 0x1.8p-1;
+    float hex_float_leading_dot = 0x.8p0;
+    float hex_float_trailing_dot = 0x1.p0;
+    float hex_float_upper = 0XABCp2;
+
+    // ==================== 算术和赋值运算符 ====================
+    int a = 20;
+    int b = 6;
+    int result = 0;
+
+    result = a + b;
+    result = a - b;
+    result = a * b;
+    result = a / b;
+    result = a % b;
+    result = a + b * 2 - 3 / 1 + 7 % 4;
+    result = +a;
+    result = -b;
+    result = -(-a);
+
+    // ==================== 关系和逻辑运算符 ====================
+    if (a < b)
+    {
+        result = result + 1;
+    }
+
+    if (a > b)
+    {
+        result = result + 2;
+    }
+
+    if (a <= b)
+    {
+        result = result + 4;
+    }
+
+    if (a >= b)
+    {
+        result = result + 8;
+    }
+
+    if (a == b)
+    {
+        result = result + 16;
+    }
+
+    if (a != b)
+    {
+        result = result + 32;
+    }
+
+    if (!0)
+    {
+        result = result + 64;
+    }
+
+    if (a > b && result != 0)
+    {
+        result = result + 128;
+    }
+
+    if (a < b || result == 0)
+    {
+        result = result + 256;
+    }
+
+    if (!(a == b) && (a != b || !0))
+    {
+        result = result + 512;
+    }
+
+    // ==================== 浮点运算 ====================
+    float x = 3.5;
+    float y = 1.5;
+    float z = 0.0;
+
+    z = x + y;
+    z = x - y;
+    z = x * y;
+    z = x / y;
+    if (x >= y && z != 0.0)
+    {
+        z = z + CONST_HEX_FLOAT;
+    }
+
+    z = scale(CONST_DEC_FLOAT, 2.0);
+
+    // ==================== 数组、循环和关键字 ====================
+    int array[010][0x10];
+    int i = 0;
+
+    for (i = 0; i < 3; i = i + 1)
+    {
+        array[i][0] = i;
+        if (i == 1)
+        {
+            continue;
+        }
+    }
+
+    while (i > 0)
+    {
+        i = i - 1;
+        if (i == 0)
+        {
+            break;
+        }
+    }
+
+    // 多行注释：内容不应生成任何 token。
+    /*
+       int fake_int = 999;
+       float fake_float = 0x1.8p0;
+       fake_int = fake_int + fake_float;
+       + - * / % = < > <= >= == != ! && ||
+    */
+
+    consume(result);
+    return 0;
+}

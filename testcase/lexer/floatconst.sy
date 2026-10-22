@@ -1,0 +1,33 @@
+// 由 Codex 生成：浮点字面量进制专项测试
+int main()
+{
+    // ==================== 十进制浮点 ====================
+    float dec_zero = 0.0;
+    float dec_basic = 3.14;
+    float dec_leading_dot = .5;
+    float dec_trailing_dot = 5.;
+    float dec_small = 0.000001;
+    float dec_large = 12345.6789;
+    float dec_exp_zero = 1e0;
+    float dec_exp_positive = 1e10;
+    float dec_exp_negative = 1e-10;
+    float dec_frac_exp = 1.5e-3;
+    float dec_upper_exp = 2.5E+4;
+    float dec_dot_exp = 3.e+2;
+    float dec_leading_dot_exp = .25E-2;
+    // 带前导零的形式仍然是十进制浮点，不是八进制浮点
+    float dec_leading_zero = 012.3;
+    float dec_leading_zero_exp = 012e2;
+    // ==================== 十六进制浮点 ====================
+    float hex_one = 0x1p0;
+    float hex_integer = 0x10p0;
+    float hex_fraction = 0x1.8p0;
+    float hex_positive_exp = 0x1.8p+1;
+    float hex_negative_exp = 0x1.8p-1;
+    float hex_leading_dot = 0x.8p0;
+    float hex_trailing_dot = 0x1.p0;
+    float hex_upper_prefix = 0XABCp2;
+    float hex_upper_exp = 0x1.Ap-3;
+    float hex_large = 0x1234.5678p+4;
+    return 0;
+}

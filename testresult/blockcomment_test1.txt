@@ -1,0 +1,64 @@
+Token                         Lexeme                        Property                      Line    Column  
+INT                           int                                                         2       0       
+IDENT                         main                          main                          2       4       
+LPAREN                        (                                                           2       8       
+RPAREN                        )                                                           2       9       
+LBRACE                        {                                                           3       0       
+INT                           int                                                         4       4       
+IDENT                         a                             a                             4       8       
+=                             =                                                           4       10      
+INT_CONST                     1                             1                             4       12      
+SEMICOLON                     ;                                                           4       13      
+INT                           int                                                         10      4       
+IDENT                         b                             b                             10      8       
+=                             =                                                           10      10      
+INT_CONST                     2                             2                             10      12      
+SEMICOLON                     ;                                                           10      13      
+INT                           int                                                         12      4       
+IDENT                         empty_comment                 empty_comment                 12      8       
+=                             =                                                           12      22      
+INT_CONST                     3                             3                             12      24      
+SEMICOLON                     ;                                                           12      25      
+INT                           int                                                         14      4       
+IDENT                         operators_after_comment       operators_after_comment       14      8       
+=                             =                                                           14      32      
+IDENT                         a                             a                             14      34      
++                             +                                                           14      36      
+IDENT                         b                             b                             14      38      
+SEMICOLON                     ;                                                           14      39      
+INT                           int                                                         20      4       
+IDENT                         after_keyword_comment         after_keyword_comment         20      8       
+=                             =                                                           20      30      
+IDENT                         operators_after_comment       operators_after_comment       20      32      
++                             +                                                           20      56      
+INT_CONST                     1                             1                             20      58      
+SEMICOLON                     ;                                                           20      59      
+INT                           int                                                         22      4       
+IDENT                         value                         value                         22      26      
+=                             =                                                           22      32      
+INT_CONST                     4                             4                             22      34      
+SEMICOLON                     ;                                                           22      35      
+IDENT                         value                         value                         23      4       
+=                             =                                                           23      10      
+IDENT                         value                         value                         23      12      
++                             +                                                           23      42      
+INT_CONST                     1                             1                             23      68      
+SEMICOLON                     ;                                                           23      69      
+INT                           int                                                         28      4       
+IDENT                         next_value                    next_value                    28      8       
+=                             =                                                           28      19      
+IDENT                         value                         value                         28      21      
++                             +                                                           28      27      
+INT_CONST                     1                             1                             28      29      
+SEMICOLON                     ;                                                           28      30      
+INT                           int                                                         30      4       
+IDENT                         final_value                   final_value                   30      8       
+=                             =                                                           30      20      
+IDENT                         next_value                    next_value                    30      22      
++                             +                                                           30      33      
+INT_CONST                     1                             1                             30      35      
+SEMICOLON                     ;                                                           30      36      
+RETURN                        return                                                      31      4       
+IDENT                         final_value                   final_value                   31      11      
+SEMICOLON                     ;                                                           31      22      
+RBRACE                        }                                                           32      0       
