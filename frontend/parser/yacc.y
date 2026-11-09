@@ -204,6 +204,21 @@ STMT:
         $$ = nullptr;
     }
     //TODO(Lab2)：考虑更多语句类型
+
+    //查stmt.h
+    | RETURN_STMT {
+        $$ = $1;
+    }
+    | WHILE_STMT {
+        $$ = $1;
+    }
+    | BREAK_STMT {
+        $$ = $1;
+    }
+    | BLOCK_STMT {
+        $$ = $1;
+    }
+
     ;
 
 CONTINUE_STMT:
@@ -273,7 +288,48 @@ IF_STMT:
     ;
 
 //TODO(Lab2)：按照你补充的语句类型，实现这些语句的处理
+//补充类型如下：
+// | RETURN_STMT {
+//         $$ = $1;
+//     }
+//     | WHILE_STMT {
+//         $$ = $1;
+//     }
+//     | BREAK_STMT {
+//         $$ = $1;
+//     }
+//     | BLOCK_STMT {
+//         $$ = $1;
+//     }
+RETURN_STMT: //返回void和返回值两种情况
+    RETURN SEMICOLON {
+        $$ = new ReturnStmt(nullptr, @1.begin.line, @1.begin.column);
+    }
+    | RETURN EXPR SEMICOLON {
+        $$ = new ReturnStmt($2, @1.begin.line, @1.begin.column);
+    }
+    ;
 
+WHILE_STMT:
+    WHILE LPAREN EXPR RPAREN STMT {
+        $$ = new WhileStmt($3, $5, @1.begin.line, @1.begin.column);
+    }
+    ;
+
+BLOCK_STMT:
+    LBRACE RBRACE {
+        $$ = new BlockStmt(new std::vector<StmtNode*>(), @1.begin.line, @1.begin.column);
+    }
+    | LBRACE STMT_LIST RBRACE {
+        $$ = new BlockStmt($2, @1.begin.line, @1.begin.column);
+    }
+    ;
+
+BREAK_STMT:
+    BREAK SEMICOLON {
+        $$ = new BreakStmt(@1.begin.line, @1.begin.column);
+    }
+    ;
 
 PARAM_DECLARATOR:
     TYPE IDENT {
