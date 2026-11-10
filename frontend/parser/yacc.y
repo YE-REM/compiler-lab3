@@ -251,6 +251,10 @@ VAR_DECLARATION:
 
 VAR_DECL_STMT:
     /* TODO(Lab2): Implement variable declaration statement rule */
+    //VarDeclStmt(VarDeclaration* decl, int line_num = -1, int col_num = -1) : StmtNode(line_num, col_num), decl(decl)
+    VAR_DECLARATION SEMICOLON {
+        $$ = new VarDeclStmt($1, @1.begin.line, @1.begin.column);
+    }
     ;
 
 FUNC_BODY:
@@ -360,7 +364,16 @@ PARAM_DECLARATOR_LIST:
     ;
 
 VAR_DECLARATOR:
+    // 单独声明左值；左值=初始化值；
     //TODO(Lab2)：完成变量声明符的处理
+    //VarDeclarator(ExprNode* lval, InitDecl* init = nullptr, int line_num = -1, int col_num = -1)
+    //        : DeclNode(line_num, col_num), lval(lval), init(init)
+    LEFT_VAL_EXPR {
+        $$ = new VarDeclarator($1, nullptr, @1.begin.line, @1.begin.column);
+    }
+    | LEFT_VAL_EXPR ASSIGN INITIALIZER {
+        $$ = new VarDeclarator($1, $3, @1.begin.line, @1.begin.column);
+    }
     ;
 
 VAR_DECLARATOR_LIST:
@@ -374,8 +387,18 @@ VAR_DECLARATOR_LIST:
     }
     ;
 
+    //变量初始化 decl.h
 INITIALIZER:
     /* TODO(Lab2): Implement variable initializer rule */
+    NOCOMMA_EXPR {
+        $$ = new Initializer($1, @1.begin.line, @1.begin.column);
+    }
+    | LBRACE RBRACE {
+        $$ = new InitializerList(new std::vector<InitDecl*>(), @1.begin.line, @1.begin.column);
+    }
+    | LBRACE INITIALIZER_LIST RBRACE {
+        $$ = new InitializerList($2, @1.begin.line, @1.begin.column);
+    }
     ;
 
 INITIALIZER_LIST:
@@ -391,6 +414,9 @@ INITIALIZER_LIST:
 
 ASSIGN_EXPR:
     // TODO(Lab2): 完成赋值表达式的处理
+    LEFT_VAL_EXPR ASSIGN NOCOMMA_EXPR {
+        $$ = new BinaryExpr(Operator::ASSIGN, $1, $3, @1.begin.line, @1.begin.column);
+    }
     ;
 
 EXPR_LIST:
