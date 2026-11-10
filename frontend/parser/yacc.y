@@ -354,6 +354,19 @@ PARAM_DECLARATOR:
         $$ = new ParamDeclarator($1, entry, dim, @1.begin.line, @1.begin.column);
     }
     //TODO(Lab2)：考虑函数形参更多情况
+    //情况1是形参参数名，情况2是数组退化指针，
+    //情况3是多维数组第一维退化
+    // 这里需要用到之前数组参数的解析部分
+    | TYPE IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST {
+        std::vector<ExprNode*>* dim = new std::vector<ExprNode*>();
+        dim->emplace_back(new LiteralExpr(-1, @3.begin.line, @3.begin.column));
+        dim->insert(dim->end(), $5->begin(), $5->end());
+        delete $5;
+
+        Entry* entry = Entry::getEntry($2);
+        $$ = new ParamDeclarator($1, entry, dim, @1.begin.line, @1.begin.column);
+    }
+
     ;
 
 PARAM_DECLARATOR_LIST:
@@ -361,6 +374,14 @@ PARAM_DECLARATOR_LIST:
         $$ = new std::vector<ParamDeclarator*>();
     }
     //TODO(Lab2)：考虑函数形参列表的构成情况
+    | PARAM_DECLARATOR {
+        $$ = new std::vector<ParamDeclarator*>();
+        $$->push_back($1);
+    }
+    | PARAM_DECLARATOR_LIST COMMA PARAM_DECLARATOR {
+        $$ = $1;
+        $$->push_back($3);
+    }
     ;
 
 VAR_DECLARATOR:
