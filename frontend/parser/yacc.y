@@ -362,6 +362,15 @@ PARAM_DECLARATOR:
     //TODO(Lab2)：考虑函数形参更多情况
     //情况1是形参参数名，情况2是数组退化指针，
     //情况3是多维数组第一维退化
+
+    //多维数组第一维在sysy里的写法要求只有空方括号：（来自文档）当 FuncFParam 为数组定义时，其第一维的长度省去（用方括号[ ]表示），而
+    //后面的各维则需要用表达式指明长度，长度是整型常量。
+    //但是测试里有，所以扩展这一条解析规则
+    | TYPE IDENT ARRAY_DIMENSION_EXPR_LIST {
+        Entry* entry = Entry::getEntry($2);
+        $$ = new ParamDeclarator($1, entry, $3, @1.begin.line, @1.begin.column);
+    }
+
     // 这里需要用到之前数组参数的解析部分
     | TYPE IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST {
         std::vector<ExprNode*>* dim = new std::vector<ExprNode*>();

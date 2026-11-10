@@ -1,0 +1,199 @@
+const int GLOBAL_N = 4;
+
+int global_array[2][4] = {
+    {1, 2, 3, 4},
+    {5, 6, 7, 8}
+};
+
+float global_float = 1.5;
+
+void empty_function() {
+}
+
+void return_function() {
+    return;
+}
+
+int scalar_function(int x, float y) {
+    int result = 0;
+
+    if (x > 0) {
+        result = x;
+    } else {
+        result = 1;
+    }
+
+    return result;
+}
+
+int vector_function(int a[], int n) {
+    int i = 0;
+    int sum = 0;
+
+    while (i < n) {
+        if (i == 1) {
+            i = i + 1;
+            continue;
+        }
+
+        sum = sum + a[i];
+        i = i + 1;
+    }
+
+    return sum;
+}
+
+int fixed_array_function(int a[10], int n) {
+    int i = 0;
+    int sum = 0;
+
+    while (i < n) {
+        sum = sum + a[i];
+        i = i + 1;
+    }
+
+    return sum;
+}
+
+int matrix_function(int a[][4], int rows) {
+    int i = 0;
+    int sum = 0;
+
+    while (i < rows) {
+        sum = sum + a[i][0];
+        i = i + 1;
+        break;
+    }
+
+    return sum;
+}
+
+int cube_function(int a[][2][2], int n) {
+    int i = 0;
+    int sum = 0;
+
+    while (i < n) {
+        sum = sum + a[i][0][0];
+        i = i + 1;
+    }
+
+    return sum;
+}
+
+int precedence_function(int x) {
+    int result = +x;
+
+    result = result + 2 * 3 - 4 / 2 % 2;
+    result = (result > 0) && (result <= 100) || !(result == 0);
+    result = (result = result + 1, result + 2);
+
+    return result;
+}
+
+int dangling_else_function(int x) {
+    if (x > 0)
+        if (x > 1)
+            return 1;
+        else
+            return 2;
+
+    return 0;
+}
+
+int main() {
+    const int local_limit = 4;
+
+    int one_dimension[10] = {
+        1, 2, 3, 4, 5,
+        6, 7, 8, 9, 10
+    };
+
+    int two_dimension[2][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8}
+    };
+
+    int three_dimension[2][2][2] = {
+        {
+            {1, 2},
+            {3, 4}
+        },
+        {
+            {5, 6},
+            {7, 8}
+        }
+    };
+
+    int x;
+    int y = 1, z = 2;
+    int uninitialized;
+    float f = 2.5;
+
+    ;
+
+    // 测试全局数组、数组下标和普通赋值
+    x = global_array[1][2];
+    one_dimension[2] = x;
+    two_dimension[0][1] = one_dimension[0];
+    three_dimension[1][0][1] = two_dimension[0][0];
+
+    // 测试无参数函数和带参数函数
+    empty_function();
+    return_function();
+
+    x = scalar_function(1, f);
+    y = vector_function(one_dimension, 10);
+    z = fixed_array_function(one_dimension, 10);
+    x = matrix_function(two_dimension, 2);
+    y = cube_function(three_dimension, 2);
+
+    // 测试表达式优先级和逗号表达式
+    x = precedence_function(x);
+    x = (x = x + 1, x + 2);
+
+    // 测试 if-else
+    if (x > 0) {
+        y = y + 1;
+    } else {
+        y = y - 1;
+    }
+
+    // 测试嵌套 if 和 dangling else
+    if (x != 0)
+        if (y > 0)
+            z = z + 1;
+        else
+            z = z - 1;
+
+    // 测试 for 的变量声明形式
+    for (int i = 0; i < local_limit; i = i + 1) {
+        x = x + i;
+    }
+
+    // 测试 for 的表达式初始化形式
+    int j = 0;
+    for (j = 0; j < local_limit; j = j + 1) {
+        y = y + j;
+    }
+
+    // 测试 while 的单语句循环体
+    while (j > 0)
+        j = j - 1;
+
+    // 测试独立代码块和空代码块
+    {
+        x = x + 1;
+    }
+
+    {}
+
+    // 测试 lexer 已经识别的长整数常量
+    2147483648;
+
+    // 测试 starttime 和 stoptime 特殊调用
+    starttime();
+    stoptime();
+
+    uninitialized = x;
+    return x + y + z + GLOBAL_N;
+}
