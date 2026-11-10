@@ -608,6 +608,12 @@ LITERAL_EXPR:
         $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
     }
     //TODO(Lab2): 处理更多字面量
+    | LL_CONST {
+        $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
+    }
+    | FLOAT_CONST {
+        $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
+    }
     ;
 
 TYPE:
