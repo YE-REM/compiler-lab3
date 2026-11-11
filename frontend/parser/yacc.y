@@ -340,6 +340,9 @@ INITIALIZER_LIST:
 
 ASSIGN_EXPR:
     // TODO(Lab2): 完成赋值表达式的处理
+    LEFT_VAL_EXPR ASSIGN NOCOMMA_EXPR {
+        $$ = new BinaryExpr(Operator::ASSIGN, $1, $3, $1->line_num, $1->col_num);
+    }
     ;
 
 EXPR_LIST:
@@ -384,36 +387,75 @@ LOGICAL_OR_EXPR:
     LOGICAL_AND_EXPR {
         $$ = $1;
     }
+    | LOGICAL_OR_EXPR OR LOGICAL_AND_EXPR {
+          $$ = new BinaryExpr(Operator::OR, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 LOGICAL_AND_EXPR:
     EQUALITY_EXPR {
         $$ = $1;
     }
+    | LOGICAL_AND_EXPR AND EQUALITY_EXPR {
+          $$ = new BinaryExpr(Operator::AND, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 EQUALITY_EXPR:
     RELATIONAL_EXPR {
         $$ = $1;
     }
+    | EQUALITY_EXPR EQ RELATIONAL_EXPR {
+          $$ = new BinaryExpr(Operator::EQ, $1, $3, $1->line_num, $1->col_num);
+      }
+    | EQUALITY_EXPR NE RELATIONAL_EXPR {
+          $$ = new BinaryExpr(Operator::NEQ, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 RELATIONAL_EXPR:
     ADDSUB_EXPR {
         $$ = $1;
     }
+    | RELATIONAL_EXPR GT ADDSUB_EXPR {
+          $$ = new BinaryExpr(Operator::GT, $1, $3, $1->line_num, $1->col_num);
+      }
+    | RELATIONAL_EXPR GE ADDSUB_EXPR {
+          $$ = new BinaryExpr(Operator::GE, $1, $3, $1->line_num, $1->col_num);
+      }
+    | RELATIONAL_EXPR LT ADDSUB_EXPR {
+          $$ = new BinaryExpr(Operator::LT, $1, $3, $1->line_num, $1->col_num);
+      }
+    | RELATIONAL_EXPR LE ADDSUB_EXPR {
+          $$ = new BinaryExpr(Operator::LE, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 ADDSUB_EXPR:
     MULDIV_EXPR {
         $$ = $1;
     }
+    | ADDSUB_EXPR PLUS MULDIV_EXPR {
+          $$ = new BinaryExpr(Operator::ADD, $1, $3, $1->line_num, $1->col_num);
+      }
+    | ADDSUB_EXPR MINUS MULDIV_EXPR {
+          $$ = new BinaryExpr(Operator::SUB, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 MULDIV_EXPR:
     UNARY_EXPR {
         $$ = $1;
     }
+    | MULDIV_EXPR STAR UNARY_EXPR {
+          $$ = new BinaryExpr(Operator::MUL, $1, $3, $1->line_num, $1->col_num);
+      }
+    | MULDIV_EXPR SLASH UNARY_EXPR {
+          $$ = new BinaryExpr(Operator::DIV, $1, $3, $1->line_num, $1->col_num);
+      }
+    | MULDIV_EXPR PERCENT UNARY_EXPR {
+          $$ = new BinaryExpr(Operator::MOD, $1, $3, $1->line_num, $1->col_num);
+      }
     ;
 
 UNARY_EXPR:
@@ -499,6 +541,9 @@ TYPE:
 
 UNARY_OP:
     // TODO(Lab2): 完成一元运算符的处理
+    PLUS  { $$ = Operator::ADD; }
+    | MINUS { $$ = Operator::SUB; }
+    | NOT   { $$ = Operator::NOT; }
     ;
 
 %%
