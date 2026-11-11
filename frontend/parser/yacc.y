@@ -204,9 +204,10 @@ STMT:
         $$ = nullptr;
     }
     //TODO(Lab2)：考虑更多语句类型
-    | RETURN_STMT {
-        $$ = $1;
-    }
+    | RETURN_STMT { $$ = $1; }
+    | BLOCK_STMT { $$ = $1; }
+    | WHILE_STMT { $$ = $1; }
+    | BREAK_STMT { $$ = $1; }
     ;
 
 CONTINUE_STMT:
@@ -285,9 +286,38 @@ FOR_STMT:
 
 IF_STMT:
     /* TODO(Lab2): Implement if statement rule */
+    IF LPAREN EXPR RPAREN STMT %prec THEN {
+        // 没有 else 分支，第三个参数传 nullptr
+        $$ = new IfStmt($3, $5, nullptr, @1.begin.line, @1.begin.column);
+    }
+    | IF LPAREN EXPR RPAREN STMT ELSE STMT {
+        // 有 else 分支，$5 是 then，$7 是 else
+        $$ = new IfStmt($3, $5, $7, @1.begin.line, @1.begin.column);
+    }
     ;
 
 //TODO(Lab2)：按照你补充的语句类型，实现这些语句的处理
+BLOCK_STMT:
+    LBRACE RBRACE {
+        std::vector<StmtNode*>* stmts = new std::vector<StmtNode*>();
+        $$ = new BlockStmt(stmts, @1.begin.line, @1.begin.column);
+    }
+    | LBRACE STMT_LIST RBRACE {
+        $$ = new BlockStmt($2, @1.begin.line, @1.begin.column);
+    }
+    ;
+
+WHILE_STMT:
+    WHILE LPAREN EXPR RPAREN STMT {
+        $$ = new WhileStmt($3, $5, @1.begin.line, @1.begin.column);
+    }
+    ;
+
+BREAK_STMT:
+    BREAK SEMICOLON {
+        $$ = new BreakStmt(@1.begin.line, @1.begin.column);
+    }
+    ;
 
 
 PARAM_DECLARATOR:
@@ -552,6 +582,12 @@ LITERAL_EXPR:
         $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
     }
     //TODO(Lab2): 处理更多字面量
+    | LL_CONST {
+        $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
+    }
+    | FLOAT_CONST{
+        $$ = new LiteralExpr($1, @1.begin.line, @1.begin.column);
+    }
     ;
 
 TYPE:
