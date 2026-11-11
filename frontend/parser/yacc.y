@@ -336,7 +336,12 @@ PARAM_DECLARATOR:
         Entry* entry = Entry::getEntry($2);
         $$ = new ParamDeclarator($1, entry, $3, @1.begin.line, @1.begin.column);
     }
-
+    | TYPE IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST {
+        Entry* entry = Entry::getEntry($2);
+        // $5 是后面的维度列表，同样把 -1 插到最前面复用
+        $5->insert($5->begin(), new LiteralExpr(-1, @3.begin.line, @3.begin.column));
+        $$ = new ParamDeclarator($1, entry, $5, @1.begin.line, @1.begin.column);
+    }
     ;
 
 PARAM_DECLARATOR_LIST:
@@ -358,12 +363,43 @@ PARAM_DECLARATOR_LIST:
 VAR_DECLARATOR:
     //TODO(Lab2)：完成变量声明符的处理
     LEFT_VAL_EXPR {
-        // 无初始化，比如 int a;
+        // 无初始化，如 int a;
         $$ = new VarDeclarator($1, nullptr, @1.begin.line, @1.begin.column);
     }
     | LEFT_VAL_EXPR ASSIGN INITIALIZER {
-        // 有初始化，比如 int a = 1;
+        // 有初始化，如 int a = 1;
         $$ = new VarDeclarator($1, $3, @1.begin.line, @1.begin.column);
+    }
+    // 1. int a[]; （无初始化）
+    | IDENT LBRACKET RBRACKET {
+        Entry* entry = Entry::getEntry($1);
+        std::vector<ExprNode*>* dims = new std::vector<ExprNode*>();
+        dims->push_back(new LiteralExpr(-1, @2.begin.line, @2.begin.column)); // 占位
+        LeftValExpr* leftVal = new LeftValExpr(entry, dims, @1.begin.line, @1.begin.column);
+        $$ = new VarDeclarator(leftVal, nullptr, @1.begin.line, @1.begin.column);
+    }
+    // 2. int a[] = {...}; （有初始化）
+    | IDENT LBRACKET RBRACKET ASSIGN INITIALIZER {
+        Entry* entry = Entry::getEntry($1);
+        std::vector<ExprNode*>* dims = new std::vector<ExprNode*>();
+        dims->push_back(new LiteralExpr(-1, @2.begin.line, @2.begin.column));
+        LeftValExpr* leftVal = new LeftValExpr(entry, dims, @1.begin.line, @1.begin.column);
+        $$ = new VarDeclarator(leftVal, $5, @1.begin.line, @1.begin.column);
+    }
+    // 3. int b[][2]; （二维，首维留空）
+    | IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST {
+        Entry* entry = Entry::getEntry($1);
+        // 直接把 -1 插到已存在列表的最前面（复用 $4，避免内存泄漏）
+        $4->insert($4->begin(), new LiteralExpr(-1, @2.begin.line, @2.begin.column));
+        LeftValExpr* leftVal = new LeftValExpr(entry, $4, @1.begin.line, @1.begin.column);
+        $$ = new VarDeclarator(leftVal, nullptr, @1.begin.line, @1.begin.column);
+    }
+    // 4. int b[][2] = {...}; （二维，首维留空，带初始化）
+    | IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST ASSIGN INITIALIZER {
+        Entry* entry = Entry::getEntry($1);
+        $4->insert($4->begin(), new LiteralExpr(-1, @2.begin.line, @2.begin.column));
+        LeftValExpr* leftVal = new LeftValExpr(entry, $4, @1.begin.line, @1.begin.column);
+        $$ = new VarDeclarator(leftVal, $6, @1.begin.line, @1.begin.column);
     }
     ;
 
