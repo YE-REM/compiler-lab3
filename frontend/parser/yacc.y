@@ -241,6 +241,9 @@ VAR_DECLARATION:
 
 VAR_DECL_STMT:
     /* TODO(Lab2): Implement variable declaration statement rule */
+    VAR_DECLARATION SEMICOLON {
+        $$ = new VarDeclStmt($1, @1.begin.line, @1.begin.column);
+    }
     ;
 
 FUNC_BODY:
@@ -310,6 +313,14 @@ PARAM_DECLARATOR_LIST:
 
 VAR_DECLARATOR:
     //TODO(Lab2)：完成变量声明符的处理
+    LEFT_VAL_EXPR {
+        // 无初始化，比如 int a;
+        $$ = new VarDeclarator($1, nullptr, @1.begin.line, @1.begin.column);
+    }
+    | LEFT_VAL_EXPR ASSIGN INITIALIZER {
+        // 有初始化，比如 int a = 1;
+        $$ = new VarDeclarator($1, $3, @1.begin.line, @1.begin.column);
+    }
     ;
 
 VAR_DECLARATOR_LIST:
@@ -325,6 +336,9 @@ VAR_DECLARATOR_LIST:
 
 INITIALIZER:
     /* TODO(Lab2): Implement variable initializer rule */
+    NOCOMMA_EXPR {
+        $$ = new Initializer($1, $1->line_num, $1->col_num); 
+    }
     ;
 
 INITIALIZER_LIST:
