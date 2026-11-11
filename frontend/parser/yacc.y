@@ -204,6 +204,9 @@ STMT:
         $$ = nullptr;
     }
     //TODO(Lab2)：考虑更多语句类型
+    | RETURN_STMT {
+        $$ = $1;
+    }
     ;
 
 CONTINUE_STMT:
@@ -215,6 +218,15 @@ CONTINUE_STMT:
 EXPR_STMT:
     EXPR SEMICOLON {
         $$ = new ExprStmt($1, @1.begin.line, @1.begin.column);
+    }
+    ;
+
+RETURN_STMT:
+    RETURN SEMICOLON {
+        $$ = new ReturnStmt(nullptr, @1.begin.line, @1.begin.column);
+    }
+    | RETURN EXPR SEMICOLON {
+        $$ = new ReturnStmt($2, @1.begin.line, @1.begin.column);
     }
     ;
 
@@ -369,27 +381,39 @@ NOCOMMA_EXPR:
     ;
 
 LOGICAL_OR_EXPR:
-    /* TODO(Lab2): Implement logical OR expression rule */
+    LOGICAL_AND_EXPR {
+        $$ = $1;
+    }
     ;
 
 LOGICAL_AND_EXPR:
-    /* TODO(Lab2): Implement logical AND expression rule */
+    EQUALITY_EXPR {
+        $$ = $1;
+    }
     ;
 
 EQUALITY_EXPR:
-    /* TODO(Lab2): Implement equality expression rule */
+    RELATIONAL_EXPR {
+        $$ = $1;
+    }
     ;
 
 RELATIONAL_EXPR:
-    /* TODO(Lab2): Implement relational expression rule */
+    ADDSUB_EXPR {
+        $$ = $1;
+    }
     ;
 
 ADDSUB_EXPR:
-    /* TODO(Lab2): Implement addition and subtraction expression rule */
+    MULDIV_EXPR {
+        $$ = $1;
+    }
     ;
 
 MULDIV_EXPR:
-    /* TODO(Lab2): Implement multiplication and division expression rule */
+    UNARY_EXPR {
+        $$ = $1;
+    }
     ;
 
 UNARY_EXPR:
@@ -468,6 +492,9 @@ LITERAL_EXPR:
 
 TYPE:
     // TODO(Lab2): 完成类型的处理
+    INT   { $$ = TypeFactory::getBasicType(Type_t::INT); }
+    | FLOAT { $$ = TypeFactory::getBasicType(Type_t::FLOAT); }
+    | VOID  { $$ = TypeFactory::getBasicType(Type_t::VOID); }
     ;
 
 UNARY_OP:
