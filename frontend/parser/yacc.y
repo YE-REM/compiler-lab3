@@ -332,6 +332,11 @@ PARAM_DECLARATOR:
         $$ = new ParamDeclarator($1, entry, dim, @1.begin.line, @1.begin.column);
     }
     //TODO(Lab2)：考虑函数形参更多情况
+    | TYPE IDENT ARRAY_DIMENSION_EXPR_LIST {
+        Entry* entry = Entry::getEntry($2);
+        $$ = new ParamDeclarator($1, entry, $3, @1.begin.line, @1.begin.column);
+    }
+
     ;
 
 PARAM_DECLARATOR_LIST:
@@ -343,6 +348,7 @@ PARAM_DECLARATOR_LIST:
         $$ = new std::vector<ParamDeclarator*>();
         $$->push_back($1);
     }
+    //维度写全情况
     | PARAM_DECLARATOR_LIST COMMA PARAM_DECLARATOR {
         $$ = $1;
         $$->push_back($3);
@@ -376,6 +382,13 @@ INITIALIZER:
     /* TODO(Lab2): Implement variable initializer rule */
     NOCOMMA_EXPR {
         $$ = new Initializer($1, $1->line_num, $1->col_num); 
+    }
+    | LBRACE RBRACE {
+        std::vector<InitDecl*>* list = new std::vector<InitDecl*>();
+        $$ = new InitializerList(list, @1.begin.line, @1.begin.column);
+    }
+    | LBRACE INITIALIZER_LIST RBRACE {
+        $$ = new InitializerList($2, @1.begin.line, @1.begin.column);
     }
     ;
 
@@ -564,6 +577,14 @@ ARRAY_DIMENSION_EXPR:
 
 ARRAY_DIMENSION_EXPR_LIST:
     /* TODO(Lab2): Implement variable dimension rule */
+    ARRAY_DIMENSION_EXPR {
+        $$ = new std::vector<ExprNode*>();
+        $$->push_back($1);
+    }
+    | ARRAY_DIMENSION_EXPR_LIST ARRAY_DIMENSION_EXPR {
+        $$ = $1;
+        $$->push_back($2);
+    }
     ;
 
 LEFT_VAL_EXPR:
