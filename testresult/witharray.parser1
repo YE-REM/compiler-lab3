@@ -1,0 +1,8 @@
+ ./bin/compiler -parser  -o testresult/witharray.parser1 testcase/parser/witharr
+ay.sy
+Input file: testcase/parser/witharray.sy
+Step: -parser
+Output: testresult/witharray.parser1
+Optimize level: 0
+msg: syntax error, unexpected INT_CONST, expecting RBRACKET, error happened at: 15.15-16
+Parsing failed.

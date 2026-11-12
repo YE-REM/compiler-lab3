@@ -1,0 +1,22 @@
+ASTree
+`-- FuncDecl main() -> int, line: 1
+    `-- BlockStmt, line: 1
+        |-- VarDeclStmt
+        |   `-- VarDeclaration, BaseType: int
+        |       `-- VarDeclarator
+        |           |-- Var: 
+        |           |   `-- LeftValueExpr x
+        |           `-- Init: 
+        |               `-- Initializer
+        |                   `-- literal int: 1
+        |-- BlockStmt, line: 4
+        |-- WhileStmt
+        |   |-- Condition:
+        |   |   `-- BinaryExpr >
+        |   |       |-- LeftValueExpr x
+        |   |       `-- literal int: 0
+        |   `-- Body:
+        |       `-- BlockStmt, line: 7
+        |           `-- BreakStmt
+        `-- ReturnStmt
+            `-- LeftValueExpr x
