@@ -240,6 +240,15 @@ EXPR_STMT:
     }
     ;
 
+RETURN_STMT:
+    RETURN SEMICOLON {
+        $$ = new ReturnStmt(nullptr, @1.begin.line, @1.begin.column);
+    }
+    | RETURN EXPR SEMICOLON {
+        $$ = new ReturnStmt($2, @1.begin.line, @1.begin.column);
+    }
+    ;
+
 VAR_DECLARATION:
     TYPE VAR_DECLARATOR_LIST {
         $$ = new VarDeclaration($1, $2, false, @1.begin.line, @1.begin.column);
@@ -296,10 +305,12 @@ FOR_STMT:
 
 IF_STMT:
     /* TODO(Lab2): Implement if statement rule */
-    IF LPAREN EXPR RPAREN STMT %prec THEN  {
+    IF LPAREN EXPR RPAREN STMT %prec THEN {
+        // 没有 else 分支，第三个参数传 nullptr
         $$ = new IfStmt($3, $5, nullptr, @1.begin.line, @1.begin.column);
     }
     | IF LPAREN EXPR RPAREN STMT ELSE STMT {
+        // 有 else 分支，$5 是 then，$7 是 else
         $$ = new IfStmt($3, $5, $7, @1.begin.line, @1.begin.column);
     }
     ;

@@ -32,13 +32,21 @@ namespace FE::AST
                     for (size_t j = 0; j < p->dims->size(); ++j)
                     {
                         ExprNode* dimExpr = (*p->dims)[j];
-                        auto*     lit     = static_cast<LiteralExpr*>(dimExpr);
-
-                        int v = lit->literal.getInt();
-                        if (v < 0)
-                            paramStr += "[]";
+                        if (dimExpr->isLiteralExpr())
+                        {
+                            // 如果是纯数字（如 10, 20，或者占位的 -1）
+                            auto* lit = static_cast<LiteralExpr*>(dimExpr);
+                            int v = lit->literal.getInt();
+                            if (v < 0)
+                                paramStr += "[]";
+                            else
+                                paramStr += "[" + std::to_string(v) + "]";
+                        }
                         else
-                            paramStr += "[" + std::to_string(v) + "]";
+                        {
+                            // 如果是变量（比如 V，MAX_SIZE 等），直接打个占位符
+                            paramStr += "[...]"; 
+                        }
                     }
                 }
 
