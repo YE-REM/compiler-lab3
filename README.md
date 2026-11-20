@@ -83,4 +83,4 @@ python test.py --group Advanced --stage llvm --opt 0
 
 ## 参考
 
-原始实验框架与说明见 `README-Original.md` 以及 `lab3/` 目录。
+原始实验框架与说明见 `README-Original.md`。`lab3/tensor_*.sy` 为本次实现补充的 tensor 测试用例。
