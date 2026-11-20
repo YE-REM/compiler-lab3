@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     {
         string arg = argv[i];
 
-        if (arg == "-lexer" || arg == "-parser" || arg == "-llvm" || arg == "-S") { step = arg; }
+        if (arg == "-lexer" || arg == "-parser" || arg == "-ast" || arg == "-llvm" || arg == "-S") { step = arg; }
         else if (arg == "-o")
         {
             if (i + 1 < argc)
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     if (inputFile.empty())
     {
         cerr << "Error: No input file specified" << endl;
-        cerr << "Usage: " << argv[0] << " [-lexer|-parser|-llvm|-S] [-o output_file] input_file [-O]" << endl;
+        cerr << "Usage: " << argv[0] << " [-lexer|-parser|-ast|-llvm|-S] [-o output_file] input_file [-O]" << endl;
         return 1;
     }
 
@@ -234,6 +234,27 @@ int main(int argc, char** argv)
             goto cleanup_ast;
         }
 
+        // -ast：先做类型检查，再打印带类型信息的语法树
+        if (step == "-ast")
+        {
+            FE::AST::ASTChecker checker;
+            bool                accept = apply(checker, *ast);
+            FE::AST::ASTPrinter printer;
+            std::ostream*       osPtr = outStream;
+            apply(printer, *ast, osPtr);
+            if (!accept)
+            {
+                cerr << "Semantic check failed with " << checker.errors.size() << " errors." << endl;
+                for (const auto& err : checker.errors) cerr << "Error: " << err << endl;
+                ret = 1;
+            }
+            else
+            {
+                ret = 0;
+            }
+            goto cleanup_ast;
+        }
+
         /*
          * Lab 3-1: 语义分析
          *
@@ -308,7 +329,18 @@ int main(int argc, char** argv)
 
         apply(codegen, *ast, &m);
 
-        if (optimizeLevel > 0)
+        bool hasTensorFunc = false;
+        for (const auto& [entry, fd] : checker.getFuncDecls())
+        {
+            (void)entry;
+            if (fd && fd->retType && fd->retType->getTypeGroup() == FE::AST::TypeGroup::TENSOR)
+            {
+                hasTensorFunc = true;
+                break;
+            }
+        }
+
+        if (optimizeLevel > 0 && !hasTensorFunc)
         {
             /*
              * Lab 4: 中间代码优化
