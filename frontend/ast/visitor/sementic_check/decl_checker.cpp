@@ -5,19 +5,19 @@ namespace FE::AST
 {
     bool ASTChecker::visit(Initializer& node)
     {
-        // 示例实现：单个初始化器的语义检查
-        // 1) 访问初始化值表达式
-        // 2) 将子表达式的属性拷贝到当前节点
         ASSERT(node.init_val && "Null initializer value");
-        bool res  = apply(*this, *node.init_val);
+        bool res = apply(*this, *node.init_val);
         node.attr = node.init_val->attr;
+        if (node.attr.val.value.type == voidType)
+        {
+            reportError("void expression cannot be used as an initializer", *node.init_val);
+            res = false;
+        }
         return res;
     }
 
     bool ASTChecker::visit(InitializerList& node)
     {
-        // 示例实现：初始化器列表的语义检查
-        // 遍历列表中的每个初始化器并逐个访问
         if (!node.init_list) return true;
         bool res = true;
         for (auto* init : *(node.init_list))
@@ -32,8 +32,61 @@ namespace FE::AST
     {
         // TODO(Lab3-1): 实现变量声明器的语义检查
         // 访问左值表达式，同步属性，处理初始化器（如果有）
-        (void)node;
-        TODO("Lab3-1: Implement VarDeclarator semantic checking");
+        // (void)node;
+        // TODO("Lab3-1: Implement VarDeclarator semantic checking");
+
+        auto* lhs = dynamic_cast<LeftValExpr*>(node.lval);
+        if (!lhs || !lhs->entry)
+        {
+            reportError("invalid variable declarator", node);
+            return false;
+        }
+
+        VarAttr& attr = node.varAttr;
+        if (symTable.hasSymbolInCurrentScope(lhs->entry) ||
+            (attr.isGlobal && glbSymbols.find(lhs->entry) != glbSymbols.end()))
+        {
+            reportError("redefinition of symbol '" + lhs->entry->getName() + "'", node);
+            return false;
+        }
+
+        bool ok = true;
+        if (lhs->indices)
+        {
+            for (ExprNode* index : *lhs->indices)
+            {
+                if (!index) continue;
+                int extent = 0;
+                if (!apply(*this, *index) || !evalConstInt(index, extent))
+                {
+                    reportError("array dimension must be a constant integer", *index);
+                    extent = 1;
+                    ok = false;
+                }
+                if (extent <= 0)
+                {
+                    reportError("array dimension must be positive", *index);
+                    extent = 1;
+                    ok = false;
+                }
+                attr.arrayDims.push_back(extent);
+            }
+        }
+
+        symTable.addSymbol(lhs->entry, attr);
+        if (attr.isGlobal) glbSymbols[lhs->entry] = attr;
+
+        lhs->attr.val.value.type     = attr.type;
+        lhs->attr.val.value.isTensor = attr.isTensor;
+        lhs->attr.val.value.isArray  = !attr.arrayDims.empty();
+        lhs->attr.val.value.dims     = attr.arrayDims;
+        if (!attr.isGlobal) lhs->isLval = true;
+
+        ok &= checkVarInit(node, attr, attr.isGlobal);
+        // 初始化检查会填写 constValue/initList，回写给后续的符号查询。
+        symTable.addSymbol(lhs->entry, attr);
+        if (attr.isGlobal) glbSymbols[lhs->entry] = attr;
+        return ok;
     }
 
     bool ASTChecker::visit(ParamDeclarator& node)
@@ -101,7 +154,27 @@ namespace FE::AST
     {
         // TODO(Lab3-1): 实现变量声明的语义检查
         // 遍历声明列表，检查重定义，处理数组维度和初始化，将符号加入符号表
-        (void)node;
-        TODO("Lab3-1: Implement VarDeclaration semantic checking");
+        // (void)node;
+        // TODO("Lab3-1: Implement VarDeclaration semantic checking");
+
+        Type* elem = elementType(node.type);
+        if (elem == voidType)
+        {
+            reportError("variable cannot have void type", node);
+            return false;
+        }
+        if (!node.decls) return true;
+
+        VarAttr attr(elem, node.isConstDecl, symTable.getScopeDepth());
+        attr.isTensor = isTensorType(node.type);
+        attr.isGlobal = symTable.isGlobalScope();
+        bool ok = true;
+        for (VarDeclarator* declarator : *node.decls)
+        {
+            if (!declarator) continue;
+            declarator->varAttr = attr;
+            ok &= apply(*this, *declarator);
+        }
+        return ok;
     }
 }  // namespace FE::AST
