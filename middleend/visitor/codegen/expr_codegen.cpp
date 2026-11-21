@@ -13,6 +13,10 @@ namespace ME
 
         Operand* address = getLValueAddress(node, m);
 
+        const auto& value = node.attr.val.value;
+        // 数组或张量表达式保留地址。只有元素和普通标量需要 load。
+        if (value.isArray || value.isTensor) return;
+
         size_t valueReg = getNewRegId();
         insert(createLoadInst(convert(node.attr.val.value.type), address, valueReg));
     }
