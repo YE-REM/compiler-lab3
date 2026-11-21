@@ -69,27 +69,69 @@ namespace ME
         insert(createStoreInst(type, value, address));
     }
 
-    // void ASTCodeGen::handleLogicalAnd(
-        // FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
-    // {
+    void ASTCodeGen::handleLogicalAnd(
+        FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
+    {
         // TODO(Lab 3-2): 生成短路与的基本块与条件分支
         // (void)node;
         // (void)lhs;
         // (void)rhs;
         // (void)m;
         // TODO("Lab3-2: Implement logical AND codegen");
-    // }
 
-    // void ASTCodeGen::handleLogicalOr(
-        // FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
-    // {
+        (void)node;
+        size_t tmpPtr = newEntryAlloca(DataType::I1);
+        size_t lhsReg = genBool(lhs, m);
+        Block* rhsBB  = createBlock();
+        Block* falseBB = createBlock();
+        Block* endBB  = createBlock();
+
+        insert(createBranchInst(lhsReg, rhsBB->blockId, falseBB->blockId));
+        enterBlock(falseBB);
+        insert(createStoreInst(DataType::I1, getImmeI32Operand(0), getRegOperand(tmpPtr)));
+        insert(createBranchInst(endBB->blockId));
+
+        enterBlock(rhsBB);
+        size_t rhsReg = genBool(rhs, m);
+        insert(createStoreInst(DataType::I1, rhsReg, getRegOperand(tmpPtr)));
+        insert(createBranchInst(endBB->blockId));
+
+        enterBlock(endBB);
+        size_t res   = getNewRegId();
+        insert(createLoadInst(DataType::I1, getRegOperand(tmpPtr), res));
+    }
+
+    void ASTCodeGen::handleLogicalOr(
+        FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
+    {
         // TODO(Lab 3-2): 生成短路或的基本块与条件分支
         // (void)node;
         // (void)lhs;
         // (void)rhs;
         // (void)m;
         // TODO("Lab3-2: Implement logical OR codegen");
-    // }
+
+        (void)node;
+        size_t tmpPtr  = newEntryAlloca(DataType::I1);
+        size_t lhsReg  = genBool(lhs, m);
+        Block* trueBB  = createBlock();
+        Block* rhsBB   = createBlock();
+        Block* endBB   = createBlock();
+
+        insert(createBranchInst(lhsReg, trueBB->blockId, rhsBB->blockId));
+        enterBlock(trueBB);
+        insert(createStoreInst(DataType::I1, getImmeI32Operand(1), getRegOperand(tmpPtr)));
+        insert(createBranchInst(endBB->blockId));
+
+        enterBlock(rhsBB);
+        size_t rhsReg = genBool(rhs, m);
+        insert(createStoreInst(DataType::I1, rhsReg, getRegOperand(tmpPtr)));
+        insert(createBranchInst(endBB->blockId));
+
+        enterBlock(endBB);
+        size_t res = getNewRegId();
+        insert(createLoadInst(DataType::I1, getRegOperand(tmpPtr), res));
+    }
 
     void ASTCodeGen::visit(FE::AST::BinaryExpr& node, Module* m)
     {
@@ -108,6 +150,16 @@ namespace ME
             return;
         }
 
+        if (node.op == FE::AST::Operator::AND)
+        {
+            handleLogicalAnd(node, *node.lhs, *node.rhs, m);
+            return;
+        }
+        if (node.op == FE::AST::Operator::OR)
+        {
+            handleLogicalOr(node, *node.lhs, *node.rhs, m);
+            return;
+        }
         // 长加法链的迭代生成，避免左深 AST 造成递归爆栈。
         if (node.op == FE::AST::Operator::ADD && !node.attr.val.value.isTensor && !node.attr.val.value.isArray)
         {
@@ -227,6 +279,33 @@ namespace ME
         size_t result = getNewRegId();
         insert(createGEP_I32Inst(convert(attr->type), base, gepDims, indices, result));
         return getRegOperand(result);
+    }
+
+
+    size_t ASTCodeGen::genBool(FE::AST::ExprNode& expr, Module* m)
+    {
+        return castReg(genExpr(expr, m), convert(expr.attr.val.value.type), DataType::I1);
+    }
+
+    void ASTCodeGen::emitCond(FE::AST::ExprNode& node, size_t trueTarget, size_t falseTarget, Module* m)
+    {
+        using FE::AST::Operator;
+        auto* binary = dynamic_cast<FE::AST::BinaryExpr*>(&node);
+        if (binary && (binary->op == Operator::AND || binary->op == Operator::OR))
+        {
+            // 条件位置直接传递真、假出口。只有需要右操作数的路径才进入 rhsBB。
+            Block* rhsBB = createBlock();
+            if (binary->op == Operator::AND)
+                emitCond(*binary->lhs, rhsBB->blockId, falseTarget, m);
+            else
+                emitCond(*binary->lhs, trueTarget, rhsBB->blockId, m);
+
+            enterBlock(rhsBB);
+            emitCond(*binary->rhs, trueTarget, falseTarget, m);
+            return;
+        }
+        size_t cond = genBool(node, m);
+        insert(createBranchInst(cond, trueTarget, falseTarget));
     }
 
 }  // namespace ME

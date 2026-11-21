@@ -49,6 +49,7 @@ namespace ME
         const std::map<FE::Sym::Entry*, FE::AST::FuncDeclStmt*>& funcDecls;
         Function*                                                curFunc;
         Block*                                                   curBlock;
+        std::vector<std::pair<size_t, size_t>>                    loopStack;  // (continue, break)
         class RegTab
         {
           public:
@@ -171,6 +172,9 @@ namespace ME
         size_t genExpr(FE::AST::ExprNode& node, Module* m);
         size_t castReg(size_t reg, DataType from, DataType to);
         Operand* getLValueAddress(FE::AST::LeftValExpr& node, Module* m);
+
+        size_t genBool(FE::AST::ExprNode& node, Module* m);
+        void emitCond(FE::AST::ExprNode& node, size_t trueTarget, size_t falseTarget, Module* m);
 
       private:
         DataType convert(FE::AST::Type* at);
