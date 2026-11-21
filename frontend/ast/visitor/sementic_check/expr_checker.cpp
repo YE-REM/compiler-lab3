@@ -242,11 +242,12 @@ namespace FE::AST
                         }
                         if (acc.value.isTensor && v.isTensor)
                         {
-                            if (acc.value.type->getBaseType() != v.type->getBaseType() || acc.value.dims != v.dims)
+                            if (acc.value.type->getBaseType() != v.type->getBaseType() || !compatibleTensorShape(acc.value.dims, v.dims))
                             {
                                 reportError("tensor shapes/types must match for addition", node);
                                 return false;
                             }
+                            if (acc.value.dims.front() < 0) acc.value.dims.front() = v.dims.front();
                             acc.value.isArray = false;
                             acc.isConstexpr   = false;
                         }
@@ -379,7 +380,7 @@ namespace FE::AST
                     reportError("tensor base types must match for '@'", node);
                     return false;
                 }
-                if (lv.dims[1] != rv.dims[0])
+                if (rv.dims[0] > 0 && lv.dims[1] != rv.dims[0])
                 {
                     reportError("tensor shapes are incompatible for '@'", node);
                     return false;
@@ -416,13 +417,14 @@ namespace FE::AST
                     reportError("tensor base types must match", node);
                     return false;
                 }
-                if (lv.dims != rv.dims)
+                if (!compatibleTensorShape(lv.dims, rv.dims))
                 {
                     reportError("tensor shapes must match", node);
                     return false;
                 }
                 elem  = lv.type;
                 shape = lv.dims;
+                if (shape.front() < 0) shape.front() = rv.dims.front();
             }
             else if (lv.isTensor)
             {
@@ -580,7 +582,8 @@ namespace FE::AST
                     ok = false;
                     continue;
                 }
-                if (!sameTrailingDims(pAttr.arrayDims, av.dims))
+                if ((pTens && pAttr.arrayDims.size() != av.dims.size()) ||
+                    !sameTrailingDims(pAttr.arrayDims, av.dims))
                 {
                     reportError("argument " + std::to_string(i + 1) + " of '" + node.func->getName() +
                                     "' has incompatible shape",
@@ -616,6 +619,11 @@ namespace FE::AST
         node.attr.val.value.type     = elem;
         node.attr.val.value.isTensor = isTens;
         node.attr.val.value.isArray  = false;
+        if (isTens && !fd->retDimsKnown)
+        {
+            reportError("tensor function return shape must be known at compile time", node);
+            return false;
+        }
         node.attr.val.value.dims     = isTens ? fd->retDims : std::vector<int>{};
         node.attr.val.isConstexpr    = false;
         return ok;

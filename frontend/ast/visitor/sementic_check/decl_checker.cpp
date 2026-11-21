@@ -108,6 +108,12 @@ namespace FE::AST
             }
         }
 
+        if (attr.isTensor && attr.arrayDims.empty())
+        {
+            reportError("tensor declaration must specify dimensions", node);
+            return false;
+        }
+
         symTable.addSymbol(lhs->entry, attr);
         if (attr.isGlobal) glbSymbols[lhs->entry] = attr;
 
@@ -163,7 +169,13 @@ namespace FE::AST
 
         if (node.dims && !node.dims->empty())
         {
-            // 形参数组的第一维退化为指针，第一维可以是 [] 或具体大小
+            // 普通数组沿用 Lab2 的兼容规则，张量首维必须由实参提供。
+            if (node.varAttr.isTensor)
+            {
+                auto* first = dynamic_cast<LiteralExpr*>(node.dims->front());
+                if (!first || first->literal.type != intType || first->literal.getInt() != -1)
+                    reportError("tensor parameter first dimension must be []", node);
+            }
             std::vector<int> dims;
             dims.push_back(-1);
             for (size_t i = 0; i < node.dims->size(); ++i)
@@ -197,6 +209,8 @@ namespace FE::AST
         }
         else
         {
+            if (node.varAttr.isTensor)
+                reportError("tensor parameter must have at least one dimension", node);
             node.varAttr.isPointer = false;
         }
         return errors.size() == errorsBefore;
@@ -333,6 +347,11 @@ namespace FE::AST
 
         std::function<bool(InitializerList&, size_t, size_t)> fill =
             [&](InitializerList& list, size_t depth, size_t start) {
+                if (attr.isTensor && depth == rank)
+                {
+                    reportError("tensor initializer nesting exceeds its rank", list);
+                    return false;
+                }
                 if (!list.init_list)
                 {
                     reportError("invalid initializer list", list);
