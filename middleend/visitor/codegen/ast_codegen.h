@@ -50,6 +50,8 @@ namespace ME
         Function*                                                curFunc;
         Block*                                                   curBlock;
         std::vector<std::pair<size_t, size_t>>                    loopStack;  // (continue, break)
+        std::map<size_t, Operand*>                              tensorFirstDims;
+        size_t                                                   tensorReturnBuffer = 0;
         class RegTab
         {
           public:
@@ -180,8 +182,15 @@ namespace ME
         size_t emitElementPtrImme(size_t baseReg, DataType elem, int offset);
         void emitTensorUnary(FE::AST::UnaryExpr& node, Module* m);
         void emitTensorElementwise(FE::AST::BinaryExpr& node, Module* m);
-        void emitTensorAssign(size_t dstReg, size_t srcReg, DataType elem, int total);
         void emitTensorMatMul(FE::AST::BinaryExpr& node, Module* m);
+
+        Operand* tensorFirstDim(size_t reg, const std::vector<int>& dims);
+        Operand* tensorElementCount(Operand* first, const std::vector<int>& dims);
+        void insertBeforeEntryTerminator(Instruction* inst);
+        size_t allocateTensorTemp(DataType elem, Operand* count);
+        void requireSameTensorExtent(Operand* lhs, Operand* rhs);
+        void emitTensorAssign(size_t dstReg, size_t srcReg, DataType elem,
+            const std::vector<int>& dstDims, const std::vector<int>& srcDims);
 
       private:
         DataType convert(FE::AST::Type* at);

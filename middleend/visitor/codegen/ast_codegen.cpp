@@ -99,6 +99,7 @@ namespace ME
             else if (auto* func = dynamic_cast<FE::AST::FuncDeclStmt*>(stmt))
                 apply(*this, *func, m);
         }
+        m->funcDecls.push_back(new FuncDeclInst(DataType::VOID, "llvm.trap"));
     }
 
     LoadInst* ASTCodeGen::createLoadInst(DataType t, Operand* ptr, size_t resReg)

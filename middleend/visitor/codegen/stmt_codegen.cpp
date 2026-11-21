@@ -16,13 +16,22 @@ namespace ME
         // (void)m;
         // TODO("Lab3-2: Implement FuncDeclStmt IR generation");
 
-        const auto retType = convert(node.retType);
+        const bool returnsTensor = node.retDimsKnown;
+        const auto retType = returnsTensor ? DataType::VOID : convert(node.retType);
         auto* def = new FuncDefInst(retType, node.entry->getName());
         auto* function = new Function(def);
         enterFunc(function);
         enterBlock(createBlock());
         name2reg.enterScope();
         reg2attr.clear();
+
+        tensorFirstDims.clear();
+        tensorReturnBuffer = 0;
+        if (returnsTensor)
+        {
+            tensorReturnBuffer = getNewRegId();
+            def->argRegs.emplace_back(DataType::PTR, getRegOperand(tensorReturnBuffer));
+        }
 
         std::vector<std::pair<FE::AST::ParamDeclarator*, size_t>> parameters;
         if (node.params)
@@ -34,6 +43,12 @@ namespace ME
                 size_t incoming = getNewRegId();
                 def->argRegs.emplace_back(type, getRegOperand(incoming));
                 parameters.emplace_back(param, incoming);
+                if (attr.isTensor)
+                {
+                    auto* first = getRegOperand(getNewRegId());
+                    def->argRegs.emplace_back(DataType::I32, first);
+                    tensorFirstDims[incoming] = first;
+                }
             }
         }
 
@@ -115,6 +130,14 @@ namespace ME
 
         auto& expr = *node.retExpr;
         size_t value = genExpr(expr, m);
+        if (tensorReturnBuffer)
+        {
+            const auto& dims = expr.attr.val.value.dims;
+            emitTensorAssign(tensorReturnBuffer, value, convert(expr.attr.val.value.type),
+                dims, dims);
+            insert(createRetInst());
+            return;
+        }
         const auto retType = curFunc->funcDef->retType;
         value = castReg(value, convert(expr.attr.val.value.type), retType);
         insert(createRetInst(retType, value));
