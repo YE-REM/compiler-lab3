@@ -176,6 +176,12 @@ namespace ME
         size_t genBool(FE::AST::ExprNode& node, Module* m);
         void emitCond(FE::AST::ExprNode& node, size_t trueTarget, size_t falseTarget, Module* m);
 
+        size_t emitElementPtr(size_t baseReg, DataType elem, size_t offsetReg);
+        size_t emitElementPtrImme(size_t baseReg, DataType elem, int offset);
+        void emitTensorUnary(FE::AST::UnaryExpr& node, Module* m);
+        void emitTensorElementwise(FE::AST::BinaryExpr& node, Module* m);
+        void emitTensorAssign(size_t dstReg, size_t srcReg, DataType elem, int total);
+
       private:
         DataType convert(FE::AST::Type* at);
         void     handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Module* m);

@@ -1,5 +1,6 @@
 #include <middleend/visitor/codegen/ast_codegen.h>
 #include <algorithm>
+#include <numeric>
 
 namespace ME
 {
@@ -55,6 +56,11 @@ namespace ME
         // TODO("Lab3-2: Implement UnaryExpr IR generation");
 
         if (!node.expr) return;
+        if (node.attr.val.value.isTensor)
+        {
+            emitTensorUnary(node, m);
+            return;
+        }
         handleUnaryCalc(*node.expr, node.op, m);
     }
 
@@ -69,6 +75,17 @@ namespace ME
         Operand* address = getLValueAddress(lhs, m);
         const auto type = convert(lhs.attr.val.value.type);
         size_t value = genExpr(rhs, m);
+        if (lhs.attr.val.value.isTensor)
+        {
+            const auto& dims = lhs.attr.val.value.dims;
+            emitTensorAssign(address->getRegNum(), value, type, std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int>()));
+
+            // 赋值表达式的值是目标张量，元素复制结束后重新产生其地址。
+            size_t result = getNewRegId();
+            insert(createGEP_I32Inst(type, address, {}, {getImmeI32Operand(0)}, result));
+            return;
+        }
+
         value = castReg(value, convert(rhs.attr.val.value.type), type);
         insert(createStoreInst(type, value, address));
     }
@@ -164,6 +181,12 @@ namespace ME
             handleLogicalOr(node, *node.lhs, *node.rhs, m);
             return;
         }
+        if (node.lhs->attr.val.value.isTensor || node.rhs->attr.val.value.isTensor)
+        {
+            emitTensorElementwise(node, m);
+            return;
+        }
+
         // 长加法链的迭代生成，避免左深 AST 造成递归爆栈。
         if (node.op == FE::AST::Operator::ADD && !node.attr.val.value.isTensor && !node.attr.val.value.isArray)
         {
