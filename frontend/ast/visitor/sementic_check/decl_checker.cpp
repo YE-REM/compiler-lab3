@@ -96,6 +96,23 @@ namespace FE::AST
         // (void)node;
         // TODO("Lab3-1: Implement ParamDeclarator semantic checking");
 
+        // 签名扫描计算形参类型，进入函数作用域后再登记符号。
+        if (!symTable.isGlobalScope())
+        {
+            if (symTable.hasSymbolInCurrentScope(node.entry))
+            {
+                reportError("duplicate parameter '" + node.entry->getName() + "'", node);
+                return false;
+            }
+
+            VarAttr attr = node.varAttr;
+            if (!attr.type) attr.type = elementType(node.type);
+            attr.isParam = true;
+            attr.scopeLevel = symTable.getScopeDepth();
+            symTable.addSymbol(node.entry, attr);
+            return true;
+        }
+
         const size_t errorsBefore = errors.size();
         Type* elem = elementType(node.type);
         node.varAttr              = VarAttr();
