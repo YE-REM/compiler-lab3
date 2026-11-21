@@ -151,8 +151,7 @@ namespace FE::AST
 
         void registerFunctionSignature(FuncDeclStmt& node);
         bool checkVarInit(VarDeclarator& decl, VarAttr& attr, bool isGlobal);
-        void flattenInitializer(InitDecl* init, const std::vector<int>& dims, Type* elem, VarAttr& attr,
-            size_t& cursor, bool isGlobal, const Node& loc);
+        bool flattenInitializer(InitializerList& init, VarDeclarator& decl, VarAttr& attr, bool isGlobal);
         void checkBranch(StmtNode* stmt);
 
         VarAttr* lookupSymbol(FE::Sym::Entry* entry);
