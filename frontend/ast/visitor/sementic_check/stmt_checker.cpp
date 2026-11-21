@@ -5,6 +5,8 @@ namespace FE::AST
 {
     bool ASTChecker::visit(ExprStmt& node)
     {
+        // 示例实现：表达式语句的语义检查
+        // 空表达式直接通过，否则访问内部表达式
         if (!node.expr) return true;
         return apply(*this, *node.expr);
     }
@@ -53,17 +55,21 @@ namespace FE::AST
 
     bool ASTChecker::visit(VarDeclStmt& node)
     {
-        if (!node.decl) return true;
-        if (symTable.isGlobalScope())
-        {
-            // 全局变量已在 Root 的预扫描阶段检查
-            return true;
-        }
-        return apply(*this, *node.decl);
+        // TODO(Lab3-1): 实现变量声明语句的语义检查
+        // 空声明直接通过，否则委托给变量声明处理
+        // (void)node;
+        // TODO("Lab3-1: Implement VarDeclStmt semantic checking");
+
+        return !node.decl || apply(*this, *node.decl);
     }
 
     bool ASTChecker::visit(BlockStmt& node)
     {
+        // TODO(Lab3-1): 实现块语句的语义检查
+        // 进入新作用域，逐条访问语句，退出作用域
+        // (void)node;
+        // TODO("Lab3-1: Implement BlockStmt semantic checking");
+
         symTable.enterScope();
         bool ok = true;
         if (node.stmts)
@@ -80,6 +86,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(ReturnStmt& node)
     {
+        // TODO(Lab3-1): 实现返回语句的语义检查
+        // 设置返回标记，检查作用域，检查返回值类型匹配
+        // (void)node;
+        // TODO("Lab3-1: Implement ReturnStmt semantic checking");
+
         funcHasReturn = true;
         if (!curFuncDecl)
         {
@@ -139,6 +150,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(WhileStmt& node)
     {
+        // TODO(Lab3-1): 实现while循环的语义检查
+        // 检查作用域，访问条件表达式，管理循环深度，访问循环体
+        // (void)node;
+        // TODO("Lab3-1: Implement WhileStmt semantic checking");
+
         bool ok = true;
         if (node.cond)
         {
@@ -157,6 +173,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(IfStmt& node)
     {
+        // TODO(Lab3-1): 实现if语句的语义检查
+        // 检查作用域，访问条件表达式，分别访问then和else分支
+        // (void)node;
+        // TODO("Lab3-1: Implement IfStmt semantic checking");
+
         bool ok = true;
         if (node.cond)
         {
@@ -174,6 +195,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(BreakStmt& node)
     {
+        // TODO(Lab3-1): 实现break语句的语义检查
+        // 检查是否在循环内使用
+        // (void)node;
+        // TODO("Lab3-1: Implement BreakStmt semantic checking");
+
         if (loopDepth == 0)
         {
             reportError("break statement outside loop", node);
@@ -184,6 +210,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(ContinueStmt& node)
     {
+        // TODO(Lab3-1): 实现continue语句的语义检查
+        // 检查是否在循环内使用
+        // (void)node;
+        // TODO("Lab3-1: Implement ContinueStmt semantic checking");
+
         if (loopDepth == 0)
         {
             reportError("continue statement outside loop", node);
@@ -194,6 +225,11 @@ namespace FE::AST
 
     bool ASTChecker::visit(ForStmt& node)
     {
+        // TODO(Lab3-1): 实现for循环的语义检查
+        // 检查作用域，访问初始化、条件、步进表达式，管理循环深度
+        // (void)node;
+        // TODO("Lab3-1: Implement ForStmt semantic checking");
+
         symTable.enterScope();
         bool ok = true;
         if (node.init) ok &= apply(*this, *node.init);
@@ -213,5 +249,76 @@ namespace FE::AST
         --loopDepth;
         symTable.exitScope();
         return ok;
+    }
+
+    void ASTChecker::registerFunctionSignature(FuncDeclStmt& node)
+    {
+        FE::Sym::Entry* entry = node.entry;
+        if (!entry) return;
+
+        auto it = funcDecls.find(entry);
+        if (it != funcDecls.end())
+        {
+            // funcDecls 中已有同名函数（包括 SysY 运行时库函数）
+            reportError("redefinition of function '" + entry->getName() + "'", node);
+            return;
+        }
+
+        funcDecls[entry] = &node;
+
+        VarAttr funcAttr;
+        funcAttr.type       = elementType(node.retType);
+        funcAttr.isTensor   = isTensorType(node.retType);
+        funcAttr.isFunction = true;
+        funcAttr.isGlobal   = true;
+        funcAttr.scopeLevel = 0;
+
+        if (symTable.hasSymbolInCurrentScope(entry))
+        {
+            reportError("redefinition of symbol '" + entry->getName() + "'", node);
+        }
+        else
+        {
+            symTable.addSymbol(entry, funcAttr);
+        }
+
+        node.attr.val.value.type     = funcAttr.type;
+        node.attr.val.value.isTensor = funcAttr.isTensor;
+        node.attr.val.value.isArray  = false;
+        node.attr.val.value.dims.clear();
+
+        if (node.retType->getTypeGroup() == TypeGroup::TENSOR && !node.retDimsKnown)
+        {
+            node.retIsTensor = true;
+        }
+
+        std::set<std::string> paramNames;
+        if (node.params)
+        {
+            for (ParamDeclarator* p : *node.params)
+            {
+                if (!p || !p->entry) continue;
+                const std::string& name = p->entry->getName();
+                if (!paramNames.insert(name).second)
+                {
+                    reportError("duplicate parameter '" + name + "'", *p);
+                }
+
+                apply(*this, *p);
+            }
+        }
+    }
+
+    bool ASTChecker::isCondScalar(const VarValue& v) const
+    {
+        return isArithmeticScalar(v);
+    }
+
+    void ASTChecker::checkBranch(StmtNode* stmt)
+    {
+        if (!stmt) return;
+        symTable.enterScope();
+        apply(*this, *stmt);
+        symTable.exitScope();
     }
 }  // namespace FE::AST

@@ -1,10 +1,74 @@
 #include <frontend/ast/visitor/sementic_check/ast_checker.h>
 #include <debug.h>
+#include <algorithm>
+#include <functional>
+#include <limits>
 
 namespace FE::AST
 {
+    namespace
+    {
+        int product(const std::vector<int>& dims)
+        {
+            if (dims.empty()) return 1;
+            long long p = 1;
+            for (int d : dims)
+            {
+                if (d <= 0) return 0;
+                p *= d;
+                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
+            }
+            return static_cast<int>(p);
+        }
+
+        int suffixProduct(const std::vector<int>& dims, size_t from)
+        {
+            long long p = 1;
+            for (size_t i = from; i < dims.size(); ++i)
+            {
+                if (dims[i] <= 0) return 0;
+                p *= dims[i];
+                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
+            }
+            return static_cast<int>(p);
+        }
+
+        int alignUp(int value, int alignment)
+        {
+            if (alignment <= 1) return value;
+            return ((value + alignment - 1) / alignment) * alignment;
+        }
+
+        VarValue zeroValue(Type* elem)
+        {
+            if (elem && elem->getBaseType() == Type_t::FLOAT) return VarValue(0.0f);
+            return VarValue(0);
+        }
+
+        VarValue convertValue(const VarValue& v, Type* elem)
+        {
+            if (!elem) return v;
+            if (elem->getBaseType() == Type_t::FLOAT)
+            {
+                if (v.type == floatType) return v;
+                if (v.type == intType || v.type == boolType || v.type == llType) return VarValue(v.getFloat());
+                return VarValue(0.0f);
+            }
+            if (elem->getBaseType() == Type_t::INT || elem->getBaseType() == Type_t::LL)
+            {
+                if (v.type == intType) return v;
+                if (v.type == floatType || v.type == boolType || v.type == llType) return VarValue(v.getInt());
+                return VarValue(0);
+            }
+            return v;
+        }
+    }  // namespace
+
     bool ASTChecker::visit(Initializer& node)
     {
+        // 示例实现：单个初始化器的语义检查
+        // 1) 访问初始化值表达式
+        // 2) 将子表达式的属性拷贝到当前节点
         ASSERT(node.init_val && "Null initializer value");
         bool res = apply(*this, *node.init_val);
         node.attr = node.init_val->attr;
@@ -18,6 +82,8 @@ namespace FE::AST
 
     bool ASTChecker::visit(InitializerList& node)
     {
+        // 示例实现：初始化器列表的语义检查
+        // 遍历列表中的每个初始化器并逐个访问
         if (!node.init_list) return true;
         bool res = true;
         for (auto* init : *(node.init_list))
@@ -193,5 +259,232 @@ namespace FE::AST
             ok &= apply(*this, *declarator);
         }
         return ok;
+    }
+
+    bool ASTChecker::evalConstInt(ExprNode* expr, int& value)
+    {
+        if (!expr || !expr->attr.val.isConstexpr) return false;
+        const VarValue& v = expr->attr.val.value;
+        if (!isScalarValue(v) || v.type != intType) return false;
+        value = v.getInt();
+        return true;
+    }
+
+    bool ASTChecker::checkVarInit(VarDeclarator& decl, VarAttr& attr, bool isGlobal)
+    {
+        if (!decl.init)
+        {
+            if (attr.isConstDecl)
+            {
+                reportError("const variable must be initialized", decl);
+                return false;
+            }
+            return true;
+        }
+
+        Type*            elem = elementType(attr.type);
+        std::vector<int> dims = attr.arrayDims;
+
+        if (dims.empty())
+        {
+            Initializer* init = dynamic_cast<Initializer*>(decl.init);
+            if (!init)
+            {
+                reportError("scalar variable cannot be initialized with an initializer list", decl);
+                return false;
+            }
+            if (!apply(*this, *init)) return false;
+            if (!checkAssignable(attr, *init->init_val, "initializer")) return false;
+            if (isGlobal && !init->init_val->attr.val.isConstexpr)
+            {
+                reportError("global variable initializer must be a constant expression", *init->init_val);
+                return false;
+            }
+            if (attr.isConstDecl && !init->init_val->attr.val.isConstexpr)
+            {
+                reportError("const variable initializer must be a constant expression", *init->init_val);
+                return false;
+            }
+            attr.constValue = convertValue(init->init_val->attr.val.value, elem);
+            attr.isInitialized = true;
+            return true;
+        }
+
+        // tensor 允许用同形状的 tensor 表达式初始化（例如 tensor int c[4] = a + b * 2;）
+        if (attr.isTensor)
+        {
+            if (Initializer* exprInit = dynamic_cast<Initializer*>(decl.init))
+            {
+                if (!apply(*this, *exprInit)) return false;
+                if (!checkAssignable(attr, *exprInit->init_val, "tensor initializer")) return false;
+                if (isGlobal && !exprInit->init_val->attr.val.isConstexpr)
+                {
+                    reportError("global tensor initializer must be a constant expression", *exprInit->init_val);
+                    return false;
+                }
+                attr.isInitialized = true;
+                attr.initList.clear();
+                return true;
+            }
+        }
+
+        InitializerList* init = dynamic_cast<InitializerList*>(decl.init);
+        if (!init)
+        {
+            reportError("array/tensor variable must be initialized with an initializer list", decl);
+            return false;
+        }
+
+        int total = product(dims);
+        if (total <= 0)
+        {
+            reportError("invalid array/tensor size", decl);
+            return false;
+        }
+
+        bool needValues = isGlobal || attr.isConstDecl;
+        if (needValues)
+        {
+            attr.initList.assign(static_cast<size_t>(total), zeroValue(elem));
+        }
+        else
+        {
+            attr.initList.clear();
+        }
+
+        size_t cursor = 0;
+        flattenInitializer(decl.init, dims, elem, attr, cursor, isGlobal, decl);
+        if (static_cast<int>(cursor) > total)
+        {
+            reportError("too many initializers", decl);
+            return false;
+        }
+        attr.isInitialized = true;
+        return true;
+    }
+
+    void ASTChecker::flattenInitializer(InitDecl* init, const std::vector<int>& dims, Type* elem, VarAttr& attr,
+        size_t& cursor, bool isGlobal, const Node& loc)
+    {
+        if (!init) return;
+        int total = product(dims);
+        if (total <= 0) return;
+        if (cursor >= static_cast<size_t>(total))
+        {
+            reportError("too many initializers", loc);
+            cursor = static_cast<size_t>(total);
+            return;
+        }
+
+        auto stride = [&](size_t d) -> int {
+            if (d >= dims.size()) return 1;
+            return suffixProduct(dims, d);
+        };
+
+        std::function<void(InitDecl*, size_t)> fill = [&](InitDecl* node, size_t desiredDepth) {
+            if (!node) return;
+            if (cursor >= static_cast<size_t>(total))
+            {
+                reportError("too many initializers", loc);
+                cursor = static_cast<size_t>(total);
+                return;
+            }
+
+            if (Initializer* scalar = dynamic_cast<Initializer*>(node))
+            {
+                apply(*this, *scalar);
+                ExprNode* val = scalar->init_val;
+                if (!val) return;
+                const VarValue& v = val->attr.val.value;
+                if (!v.type || v.type == voidType)
+                {
+                    reportError("void value cannot be used as an initializer", *val);
+                    return;
+                }
+                if (!isArithmeticScalar(v))
+                {
+                    reportError("initializer element must be a scalar", *val);
+                    return;
+                }
+                if (isGlobal && !val->attr.val.isConstexpr)
+                {
+                    reportError("global initializer element must be a constant expression", *val);
+                }
+                if (attr.isConstDecl && !val->attr.val.isConstexpr)
+                {
+                    reportError("const initializer element must be a constant expression", *val);
+                }
+                if (!attr.initList.empty() && cursor < attr.initList.size())
+                {
+                    attr.initList[cursor] = convertValue(v, elem);
+                }
+                ++cursor;
+                return;
+            }
+
+            InitializerList* list = dynamic_cast<InitializerList*>(node);
+            if (!list || !list->init_list)
+            {
+                reportError("invalid initializer", loc);
+                return;
+            }
+
+            if (desiredDepth >= dims.size())
+            {
+                // 过量嵌套：找到第一个可用于初始化的标量
+                for (InitDecl* child : *list->init_list)
+                {
+                    if (!child) continue;
+                    fill(child, dims.size());
+                    return;
+                }
+                return;
+            }
+
+            size_t depth = desiredDepth;
+            // 如果当前位置没有对齐到 desiredDepth 的子数组边界，
+            // 说明前面的扁平初始化已经进入了更深一层的子数组。
+            while (depth + 1 < dims.size() && cursor % static_cast<size_t>(stride(depth)) != 0)
+            {
+                ++depth;
+            }
+            if (depth >= dims.size())
+            {
+                for (InitDecl* child : *list->init_list)
+                {
+                    if (!child) continue;
+                    fill(child, dims.size());
+                    return;
+                }
+                return;
+            }
+
+            int cap   = stride(depth);
+            int start = static_cast<int>(cursor);
+            int limit = std::min(total, start + cap);
+
+            for (InitDecl* child : *list->init_list)
+            {
+                if (!child) continue;
+                bool isList = dynamic_cast<InitializerList*>(child) != nullptr;
+                fill(child, depth + 1);
+                if (isList)
+                {
+                    int childStride = (depth + 1 < dims.size()) ? stride(depth + 1) : 1;
+                    cursor          = static_cast<size_t>(alignUp(static_cast<int>(cursor), childStride));
+                }
+                if (static_cast<int>(cursor) > limit)
+                {
+                    reportError("too many initializers for sub-array", *child);
+                    cursor = static_cast<size_t>(limit);
+                    break;
+                }
+            }
+            // 空列表也要占用整个子数组
+            cursor = static_cast<size_t>(start + cap);
+            if (static_cast<int>(cursor) > total) cursor = static_cast<size_t>(total);
+        };
+
+        fill(init, 0);
     }
 }  // namespace FE::AST

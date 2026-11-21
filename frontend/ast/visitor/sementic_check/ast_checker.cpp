@@ -1,14 +1,16 @@
 #include <frontend/ast/visitor/sementic_check/ast_checker.h>
 #include <debug.h>
 #include <algorithm>
-#include <functional>
-#include <limits>
-#include <numeric>
 
 namespace FE::AST
 {
     bool ASTChecker::visit(Root& node)
     {
+        // TODO(Lab3-1): 实现根节点的语义检查
+        // 重置符号表，遍历所有顶层语句进行检查，确保存在main函数
+        // (void)node;
+        // TODO("Lab3-1: Implement Root node semantic checking");
+
         symTable.reset();
         glbSymbols.clear();
         errors.clear();
@@ -38,7 +40,7 @@ namespace FE::AST
                 }
                 else if (auto* decl = dynamic_cast<VarDeclStmt*>(stmt))
                 {
-                    registerGlobalDeclaration(*decl);
+                    apply(*this, *decl);
                 }
                 else
                 {
@@ -58,63 +60,119 @@ namespace FE::AST
         return errors.empty();
     }
 
-    namespace
+    void ASTChecker::libFuncRegister()
     {
-        int product(const std::vector<int>& dims)
-        {
-            if (dims.empty()) return 1;
-            long long p = 1;
-            for (int d : dims)
-            {
-                if (d <= 0) return 0;
-                p *= d;
-                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
-            }
-            return static_cast<int>(p);
-        }
+        // 示例实现：注册 SysY 标准库函数到 funcDecls 中
+        // 这样在语义检查时可以识别并检查对库函数的调用
+        // 包括：getint, getch, getarray, getfloat, getfarray,
+        //      putint, putch, putarray, putfloat, putfarray,
+        //      _sysy_starttime, _sysy_stoptime
+        using SymEnt = FE::Sym::Entry;
 
-        int suffixProduct(const std::vector<int>& dims, size_t from)
-        {
-            long long p = 1;
-            for (size_t i = from; i < dims.size(); ++i)
-            {
-                if (dims[i] <= 0) return 0;
-                p *= dims[i];
-                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
-            }
-            return static_cast<int>(p);
-        }
+        // int getint(), getch(), getarray(int a[]);
+        static SymEnt* getint   = SymEnt::getEntry("getint");
+        static SymEnt* getch    = SymEnt::getEntry("getch");
+        static SymEnt* getarray = SymEnt::getEntry("getarray");
 
-        int alignUp(int value, int alignment)
-        {
-            if (alignment <= 1) return value;
-            return ((value + alignment - 1) / alignment) * alignment;
-        }
+        // float getfloat();
+        static SymEnt* getfloat = SymEnt::getEntry("getfloat");
 
-        VarValue zeroValue(Type* elem)
-        {
-            if (elem && elem->getBaseType() == Type_t::FLOAT) return VarValue(0.0f);
-            return VarValue(0);
-        }
+        // int getfarray(float a[]);
+        static SymEnt* getfarray = SymEnt::getEntry("getfarray");
 
-        VarValue convertValue(const VarValue& v, Type* elem)
-        {
-            if (!elem) return v;
-            if (elem->getBaseType() == Type_t::FLOAT)
-            {
-                if (v.type == floatType) return v;
-                if (v.type == intType || v.type == boolType || v.type == llType) return VarValue(v.getFloat());
-                return VarValue(0.0f);
-            }
-            if (elem->getBaseType() == Type_t::INT || elem->getBaseType() == Type_t::LL)
-            {
-                if (v.type == intType) return v;
-                if (v.type == floatType || v.type == boolType || v.type == llType) return VarValue(v.getInt());
-                return VarValue(0);
-            }
-            return v;
-        }
-    }  // namespace
+        // void putint(int a), putch(int a), putarray(int n, int a[]);
+        static SymEnt* putint   = SymEnt::getEntry("putint");
+        static SymEnt* putch    = SymEnt::getEntry("putch");
+        static SymEnt* putarray = SymEnt::getEntry("putarray");
+
+        // void putfloat(float a);
+        static SymEnt* putfloat = SymEnt::getEntry("putfloat");
+
+        // void putfarray(int n, float a[]);
+        static SymEnt* putfarray = SymEnt::getEntry("putfarray");
+
+        // void starttime(), stoptime();
+        static SymEnt* _sysy_starttime = SymEnt::getEntry("_sysy_starttime");
+        static SymEnt* _sysy_stoptime  = SymEnt::getEntry("_sysy_stoptime");
+
+        // int getint()
+        funcDecls[getint] = new FuncDeclStmt(intType, getint, nullptr);
+
+        // int getch()
+        funcDecls[getch] = new FuncDeclStmt(intType, getch, nullptr);
+
+        // int getarray(int a[])
+        auto getarray_params = new std::vector<ParamDeclarator*>();
+        auto getarray_param  = new ParamDeclarator(TypeFactory::getPtrType(intType), SymEnt::getEntry("a"));
+        getarray_param->attr.val.value.type = TypeFactory::getPtrType(intType);
+        getarray_params->push_back(getarray_param);
+        funcDecls[getarray] = new FuncDeclStmt(intType, getarray, getarray_params);
+
+        // float getfloat()
+        funcDecls[getfloat] = new FuncDeclStmt(floatType, getfloat, nullptr);
+
+        // int getfarray(float a[])
+        auto getfarray_params = new std::vector<ParamDeclarator*>();
+        auto getfarray_param  = new ParamDeclarator(TypeFactory::getPtrType(floatType), SymEnt::getEntry("a"));
+        getfarray_param->attr.val.value.type = TypeFactory::getPtrType(floatType);
+        getfarray_params->push_back(getfarray_param);
+        funcDecls[getfarray] = new FuncDeclStmt(intType, getfarray, getfarray_params);
+
+        // void putint(int a)
+        auto putint_params                = new std::vector<ParamDeclarator*>();
+        auto putint_param                 = new ParamDeclarator(intType, SymEnt::getEntry("a"));
+        putint_param->attr.val.value.type = intType;
+        putint_params->push_back(putint_param);
+        funcDecls[putint] = new FuncDeclStmt(voidType, putint, putint_params);
+
+        // void putch(int a)
+        auto putch_params                = new std::vector<ParamDeclarator*>();
+        auto putch_param                 = new ParamDeclarator(intType, SymEnt::getEntry("a"));
+        putch_param->attr.val.value.type = intType;
+        putch_params->push_back(putch_param);
+        funcDecls[putch] = new FuncDeclStmt(voidType, putch, putch_params);
+
+        // void putarray(int n, int a[])
+        auto putarray_params                 = new std::vector<ParamDeclarator*>();
+        auto putarray_param1                 = new ParamDeclarator(intType, SymEnt::getEntry("n"));
+        putarray_param1->attr.val.value.type = intType;
+        auto putarray_param2 = new ParamDeclarator(TypeFactory::getPtrType(intType), SymEnt::getEntry("a"));
+        putarray_param2->attr.val.value.type = TypeFactory::getPtrType(intType);
+        putarray_params->push_back(putarray_param1);
+        putarray_params->push_back(putarray_param2);
+        funcDecls[putarray] = new FuncDeclStmt(voidType, putarray, putarray_params);
+
+        // void putfloat(float a)
+        auto putfloat_params                = new std::vector<ParamDeclarator*>();
+        auto putfloat_param                 = new ParamDeclarator(floatType, SymEnt::getEntry("a"));
+        putfloat_param->attr.val.value.type = floatType;
+        putfloat_params->push_back(putfloat_param);
+        funcDecls[putfloat] = new FuncDeclStmt(voidType, putfloat, putfloat_params);
+
+        // void putfarray(int n, float a[])
+        auto putfarray_params                 = new std::vector<ParamDeclarator*>();
+        auto putfarray_param1                 = new ParamDeclarator(intType, SymEnt::getEntry("n"));
+        putfarray_param1->attr.val.value.type = intType;
+        auto putfarray_param2 = new ParamDeclarator(TypeFactory::getPtrType(floatType), SymEnt::getEntry("a"));
+        putfarray_param2->attr.val.value.type = TypeFactory::getPtrType(floatType);
+        putfarray_params->push_back(putfarray_param1);
+        putfarray_params->push_back(putfarray_param2);
+        funcDecls[putfarray] = new FuncDeclStmt(voidType, putfarray, putfarray_params);
+
+        // void _sysy_starttime(int lineno)
+        auto starttime_params                = new std::vector<ParamDeclarator*>();
+        auto starttime_param                 = new ParamDeclarator(intType, SymEnt::getEntry("lineno"));
+        starttime_param->attr.val.value.type = intType;
+        starttime_params->push_back(starttime_param);
+        funcDecls[_sysy_starttime] = new FuncDeclStmt(voidType, _sysy_starttime, starttime_params);
+
+        // void _sysy_stoptime(int lineno)
+        auto stoptime_params                = new std::vector<ParamDeclarator*>();
+        auto stoptime_param                 = new ParamDeclarator(intType, SymEnt::getEntry("lineno"));
+        stoptime_param->attr.val.value.type = intType;
+        stoptime_params->push_back(stoptime_param);
+        funcDecls[_sysy_stoptime] = new FuncDeclStmt(voidType, _sysy_stoptime, stoptime_params);
+    }
 
     void ASTChecker::reportError(const std::string& msg, const Node& node)
     {
@@ -125,15 +183,6 @@ namespace FE::AST
     {
         if (line >= 0) errors.push_back(msg + " at line " + std::to_string(line));
         else errors.push_back(msg);
-    }
-
-    bool ASTChecker::evalConstInt(ExprNode* expr, int& value)
-    {
-        if (!expr || !expr->attr.val.isConstexpr) return false;
-        const VarValue& v = expr->attr.val.value;
-        if (!isScalarValue(v) || v.type != intType) return false;
-        value = v.getInt();
-        return true;
     }
 
     Type* ASTChecker::elementType(Type* t) const
@@ -158,11 +207,6 @@ namespace FE::AST
         if (!isScalarValue(v)) return false;
         Type_t k = v.type->getBaseType();
         return k == Type_t::INT || k == Type_t::FLOAT || k == Type_t::BOOL || k == Type_t::LL;
-    }
-
-    bool ASTChecker::isCondScalar(const VarValue& v) const
-    {
-        return isArithmeticScalar(v);
     }
 
     VarAttr* ASTChecker::lookupSymbol(FE::Sym::Entry* entry)
@@ -217,381 +261,5 @@ namespace FE::AST
         const VarAttr& dst, ExprNode& src, const std::string& context)
     {
         return checkAssignable(dst.type, dst.isTensor, dst.arrayDims, src, context);
-    }
-
-    void ASTChecker::registerFunctionSignature(FuncDeclStmt& node)
-    {
-        FE::Sym::Entry* entry = node.entry;
-        if (!entry) return;
-
-        auto it = funcDecls.find(entry);
-        if (it != funcDecls.end())
-        {
-            // funcDecls 中已有同名函数（包括 SysY 运行时库函数）
-            reportError("redefinition of function '" + entry->getName() + "'", node);
-            return;
-        }
-
-        funcDecls[entry] = &node;
-
-        VarAttr funcAttr;
-        funcAttr.type       = elementType(node.retType);
-        funcAttr.isTensor   = isTensorType(node.retType);
-        funcAttr.isFunction = true;
-        funcAttr.isGlobal   = true;
-        funcAttr.scopeLevel = 0;
-
-        if (symTable.hasSymbolInCurrentScope(entry))
-        {
-            reportError("redefinition of symbol '" + entry->getName() + "'", node);
-        }
-        else
-        {
-            symTable.addSymbol(entry, funcAttr);
-        }
-
-        node.attr.val.value.type     = funcAttr.type;
-        node.attr.val.value.isTensor = funcAttr.isTensor;
-        node.attr.val.value.isArray  = false;
-        node.attr.val.value.dims.clear();
-
-        if (node.retType->getTypeGroup() == TypeGroup::TENSOR && !node.retDimsKnown)
-        {
-            node.retIsTensor = true;
-        }
-
-        std::set<std::string> paramNames;
-        if (node.params)
-        {
-            for (ParamDeclarator* p : *node.params)
-            {
-                if (!p || !p->entry) continue;
-                const std::string& name = p->entry->getName();
-                if (!paramNames.insert(name).second)
-                {
-                    reportError("duplicate parameter '" + name + "'", *p);
-                }
-
-                apply(*this, *p);
-            }
-        }
-    }
-
-    bool ASTChecker::registerGlobalDeclaration(VarDeclStmt& node)
-    {
-        return !node.decl || apply(*this, *node.decl);
-    }
-
-    bool ASTChecker::checkVarInit(VarDeclarator& decl, VarAttr& attr, bool isGlobal)
-    {
-        if (!decl.init)
-        {
-            if (attr.isConstDecl)
-            {
-                reportError("const variable must be initialized", decl);
-                return false;
-            }
-            return true;
-        }
-
-        Type*            elem = elementType(attr.type);
-        std::vector<int> dims = attr.arrayDims;
-
-        if (dims.empty())
-        {
-            Initializer* init = dynamic_cast<Initializer*>(decl.init);
-            if (!init)
-            {
-                reportError("scalar variable cannot be initialized with an initializer list", decl);
-                return false;
-            }
-            if (!apply(*this, *init)) return false;
-            if (!checkAssignable(attr, *init->init_val, "initializer")) return false;
-            if (isGlobal && !init->init_val->attr.val.isConstexpr)
-            {
-                reportError("global variable initializer must be a constant expression", *init->init_val);
-                return false;
-            }
-            if (attr.isConstDecl && !init->init_val->attr.val.isConstexpr)
-            {
-                reportError("const variable initializer must be a constant expression", *init->init_val);
-                return false;
-            }
-            attr.constValue = convertValue(init->init_val->attr.val.value, elem);
-            attr.isInitialized = true;
-            return true;
-        }
-
-        // tensor 允许用同形状的 tensor 表达式初始化（例如 tensor int c[4] = a + b * 2;）
-        if (attr.isTensor)
-        {
-            if (Initializer* exprInit = dynamic_cast<Initializer*>(decl.init))
-            {
-                if (!apply(*this, *exprInit)) return false;
-                if (!checkAssignable(attr, *exprInit->init_val, "tensor initializer")) return false;
-                if (isGlobal && !exprInit->init_val->attr.val.isConstexpr)
-                {
-                    reportError("global tensor initializer must be a constant expression", *exprInit->init_val);
-                    return false;
-                }
-                attr.isInitialized = true;
-                attr.initList.clear();
-                return true;
-            }
-        }
-
-        InitializerList* init = dynamic_cast<InitializerList*>(decl.init);
-        if (!init)
-        {
-            reportError("array/tensor variable must be initialized with an initializer list", decl);
-            return false;
-        }
-
-        int total = product(dims);
-        if (total <= 0)
-        {
-            reportError("invalid array/tensor size", decl);
-            return false;
-        }
-
-        bool needValues = isGlobal || attr.isConstDecl;
-        if (needValues)
-        {
-            attr.initList.assign(static_cast<size_t>(total), zeroValue(elem));
-        }
-        else
-        {
-            attr.initList.clear();
-        }
-
-        size_t cursor = 0;
-        flattenInitializer(decl.init, dims, elem, attr, cursor, isGlobal, decl);
-        if (static_cast<int>(cursor) > total)
-        {
-            reportError("too many initializers", decl);
-            return false;
-        }
-        attr.isInitialized = true;
-        return true;
-    }
-
-    void ASTChecker::flattenInitializer(InitDecl* init, const std::vector<int>& dims, Type* elem, VarAttr& attr,
-        size_t& cursor, bool isGlobal, const Node& loc)
-    {
-        if (!init) return;
-        int total = product(dims);
-        if (total <= 0) return;
-        if (cursor >= static_cast<size_t>(total))
-        {
-            reportError("too many initializers", loc);
-            cursor = static_cast<size_t>(total);
-            return;
-        }
-
-        auto stride = [&](size_t d) -> int {
-            if (d >= dims.size()) return 1;
-            return suffixProduct(dims, d);
-        };
-
-        std::function<void(InitDecl*, size_t)> fill = [&](InitDecl* node, size_t desiredDepth) {
-            if (!node) return;
-            if (cursor >= static_cast<size_t>(total))
-            {
-                reportError("too many initializers", loc);
-                cursor = static_cast<size_t>(total);
-                return;
-            }
-
-            if (Initializer* scalar = dynamic_cast<Initializer*>(node))
-            {
-                apply(*this, *scalar);
-                ExprNode* val = scalar->init_val;
-                if (!val) return;
-                const VarValue& v = val->attr.val.value;
-                if (!v.type || v.type == voidType)
-                {
-                    reportError("void value cannot be used as an initializer", *val);
-                    return;
-                }
-                if (!isArithmeticScalar(v))
-                {
-                    reportError("initializer element must be a scalar", *val);
-                    return;
-                }
-                if (isGlobal && !val->attr.val.isConstexpr)
-                {
-                    reportError("global initializer element must be a constant expression", *val);
-                }
-                if (attr.isConstDecl && !val->attr.val.isConstexpr)
-                {
-                    reportError("const initializer element must be a constant expression", *val);
-                }
-                if (!attr.initList.empty() && cursor < attr.initList.size())
-                {
-                    attr.initList[cursor] = convertValue(v, elem);
-                }
-                ++cursor;
-                return;
-            }
-
-            InitializerList* list = dynamic_cast<InitializerList*>(node);
-            if (!list || !list->init_list)
-            {
-                reportError("invalid initializer", loc);
-                return;
-            }
-
-            if (desiredDepth >= dims.size())
-            {
-                // 过量嵌套：找到第一个可用于初始化的标量
-                for (InitDecl* child : *list->init_list)
-                {
-                    if (!child) continue;
-                    fill(child, dims.size());
-                    return;
-                }
-                return;
-            }
-
-            size_t depth = desiredDepth;
-            // 如果当前位置没有对齐到 desiredDepth 的子数组边界，
-            // 说明前面的扁平初始化已经进入了更深一层的子数组。
-            while (depth + 1 < dims.size() && cursor % static_cast<size_t>(stride(depth)) != 0)
-            {
-                ++depth;
-            }
-            if (depth >= dims.size())
-            {
-                for (InitDecl* child : *list->init_list)
-                {
-                    if (!child) continue;
-                    fill(child, dims.size());
-                    return;
-                }
-                return;
-            }
-
-            int cap   = stride(depth);
-            int start = static_cast<int>(cursor);
-            int limit = std::min(total, start + cap);
-
-            for (InitDecl* child : *list->init_list)
-            {
-                if (!child) continue;
-                bool isList = dynamic_cast<InitializerList*>(child) != nullptr;
-                fill(child, depth + 1);
-                if (isList)
-                {
-                    int childStride = (depth + 1 < dims.size()) ? stride(depth + 1) : 1;
-                    cursor          = static_cast<size_t>(alignUp(static_cast<int>(cursor), childStride));
-                }
-                if (static_cast<int>(cursor) > limit)
-                {
-                    reportError("too many initializers for sub-array", *child);
-                    cursor = static_cast<size_t>(limit);
-                    break;
-                }
-            }
-            // 空列表也要占用整个子数组
-            cursor = static_cast<size_t>(start + cap);
-            if (static_cast<int>(cursor) > total) cursor = static_cast<size_t>(total);
-        };
-
-        fill(init, 0);
-    }
-
-    void ASTChecker::checkBranch(StmtNode* stmt)
-    {
-        if (!stmt) return;
-        symTable.enterScope();
-        apply(*this, *stmt);
-        symTable.exitScope();
-    }
-
-    void ASTChecker::libFuncRegister()
-    {
-        // 示例实现：注册 SysY 标准库函数到 funcDecls 中
-        // 这样在语义检查时可以识别并检查对库函数的调用
-        // 包括：getint, getch, getarray, getfloat, getfarray,
-        //      putint, putch, putarray, putfloat, putfarray,
-        //      _sysy_starttime, _sysy_stoptime
-        using SymEnt = FE::Sym::Entry;
-
-        static SymEnt* getint   = SymEnt::getEntry("getint");
-        static SymEnt* getch    = SymEnt::getEntry("getch");
-        static SymEnt* getarray = SymEnt::getEntry("getarray");
-        static SymEnt* getfloat = SymEnt::getEntry("getfloat");
-        static SymEnt* getfarray = SymEnt::getEntry("getfarray");
-        static SymEnt* putint   = SymEnt::getEntry("putint");
-        static SymEnt* putch    = SymEnt::getEntry("putch");
-        static SymEnt* putarray = SymEnt::getEntry("putarray");
-        static SymEnt* putfloat = SymEnt::getEntry("putfloat");
-        static SymEnt* putfarray = SymEnt::getEntry("putfarray");
-        static SymEnt* _sysy_starttime = SymEnt::getEntry("_sysy_starttime");
-        static SymEnt* _sysy_stoptime  = SymEnt::getEntry("_sysy_stoptime");
-
-        funcDecls[getint] = new FuncDeclStmt(intType, getint, nullptr);
-        funcDecls[getch]  = new FuncDeclStmt(intType, getch, nullptr);
-        funcDecls[getfloat] = new FuncDeclStmt(floatType, getfloat, nullptr);
-
-        auto getarray_params = new std::vector<ParamDeclarator*>();
-        auto getarray_param  = new ParamDeclarator(TypeFactory::getPtrType(intType), SymEnt::getEntry("a"));
-        getarray_param->attr.val.value.type = TypeFactory::getPtrType(intType);
-        getarray_params->push_back(getarray_param);
-        funcDecls[getarray] = new FuncDeclStmt(intType, getarray, getarray_params);
-
-        auto getfarray_params = new std::vector<ParamDeclarator*>();
-        auto getfarray_param  = new ParamDeclarator(TypeFactory::getPtrType(floatType), SymEnt::getEntry("a"));
-        getfarray_param->attr.val.value.type = TypeFactory::getPtrType(floatType);
-        getfarray_params->push_back(getfarray_param);
-        funcDecls[getfarray] = new FuncDeclStmt(intType, getfarray, getfarray_params);
-
-        auto putint_params                = new std::vector<ParamDeclarator*>();
-        auto putint_param                 = new ParamDeclarator(intType, SymEnt::getEntry("a"));
-        putint_param->attr.val.value.type = intType;
-        putint_params->push_back(putint_param);
-        funcDecls[putint] = new FuncDeclStmt(voidType, putint, putint_params);
-
-        auto putch_params                = new std::vector<ParamDeclarator*>();
-        auto putch_param                 = new ParamDeclarator(intType, SymEnt::getEntry("a"));
-        putch_param->attr.val.value.type = intType;
-        putch_params->push_back(putch_param);
-        funcDecls[putch] = new FuncDeclStmt(voidType, putch, putch_params);
-
-        auto putarray_params                 = new std::vector<ParamDeclarator*>();
-        auto putarray_param1                 = new ParamDeclarator(intType, SymEnt::getEntry("n"));
-        putarray_param1->attr.val.value.type = intType;
-        auto putarray_param2 = new ParamDeclarator(TypeFactory::getPtrType(intType), SymEnt::getEntry("a"));
-        putarray_param2->attr.val.value.type = TypeFactory::getPtrType(intType);
-        putarray_params->push_back(putarray_param1);
-        putarray_params->push_back(putarray_param2);
-        funcDecls[putarray] = new FuncDeclStmt(voidType, putarray, putarray_params);
-
-        auto putfloat_params                = new std::vector<ParamDeclarator*>();
-        auto putfloat_param                 = new ParamDeclarator(floatType, SymEnt::getEntry("a"));
-        putfloat_param->attr.val.value.type = floatType;
-        putfloat_params->push_back(putfloat_param);
-        funcDecls[putfloat] = new FuncDeclStmt(voidType, putfloat, putfloat_params);
-
-        auto putfarray_params                 = new std::vector<ParamDeclarator*>();
-        auto putfarray_param1                 = new ParamDeclarator(intType, SymEnt::getEntry("n"));
-        putfarray_param1->attr.val.value.type = intType;
-        auto putfarray_param2 = new ParamDeclarator(TypeFactory::getPtrType(floatType), SymEnt::getEntry("a"));
-        putfarray_param2->attr.val.value.type = TypeFactory::getPtrType(floatType);
-        putfarray_params->push_back(putfarray_param1);
-        putfarray_params->push_back(putfarray_param2);
-        funcDecls[putfarray] = new FuncDeclStmt(voidType, putfarray, putfarray_params);
-
-        auto starttime_params                = new std::vector<ParamDeclarator*>();
-        auto starttime_param                 = new ParamDeclarator(intType, SymEnt::getEntry("lineno"));
-        starttime_param->attr.val.value.type = intType;
-        starttime_params->push_back(starttime_param);
-        funcDecls[_sysy_starttime] = new FuncDeclStmt(voidType, _sysy_starttime, starttime_params);
-
-        auto stoptime_params                = new std::vector<ParamDeclarator*>();
-        auto stoptime_param                 = new ParamDeclarator(intType, SymEnt::getEntry("lineno"));
-        stoptime_param->attr.val.value.type = intType;
-        stoptime_params->push_back(stoptime_param);
-        funcDecls[_sysy_stoptime] = new FuncDeclStmt(voidType, _sysy_stoptime, stoptime_params);
     }
 }  // namespace FE::AST
