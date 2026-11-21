@@ -40,8 +40,61 @@ namespace FE::AST
     {
         // TODO(Lab3-1): 实现函数形参的语义检查
         // 检查形参重定义，处理数组形参的类型退化，将形参加入符号表
-        (void)node;
-        TODO("Lab3-1: Implement ParamDeclarator semantic checking");
+        // (void)node;
+        // TODO("Lab3-1: Implement ParamDeclarator semantic checking");
+
+        const size_t errorsBefore = errors.size();
+        Type* elem = elementType(node.type);
+        node.varAttr              = VarAttr();
+        node.varAttr.type         = elem;
+        node.varAttr.isTensor     = isTensorType(node.type);
+        node.varAttr.isParam      = true;
+        node.varAttr.scopeLevel   = 1;
+
+        node.attr.val.value.type     = elem;
+        node.attr.val.value.isTensor = node.varAttr.isTensor;
+        node.attr.val.value.isArray  = false;
+        node.attr.val.value.dims.clear();
+
+        if (node.dims && !node.dims->empty())
+        {
+            // 形参数组的第一维退化为指针，第一维可以是 [] 或具体大小
+            std::vector<int> dims;
+            dims.push_back(-1);
+            for (size_t i = 0; i < node.dims->size(); ++i)
+            {
+                ExprNode* dimExpr = (*node.dims)[i];
+                if (!dimExpr) continue;
+                bool ok = apply(*this, *dimExpr);
+                int  val = 0;
+                if (!ok || !evalConstInt(dimExpr, val))
+                {
+                    reportError("array parameter dimension must be a constant integer", *dimExpr);
+                    val = 1;
+                }
+                if (i == 0)
+                {
+                    // 第一维允许为 -1（[]），也允许写具体大小；统一按指针处理
+                    continue;
+                }
+                if (val <= 0)
+                {
+                    reportError("array parameter dimension must be positive", *dimExpr);
+                    val = 1;
+                }
+                dims.push_back(val);
+            }
+            node.varAttr.arrayDims = dims;
+            node.varAttr.isPointer = true;
+            node.attr.val.value.dims     = dims;
+            node.attr.val.value.isArray  = true;
+            node.attr.val.value.isTensor = node.varAttr.isTensor;
+        }
+        else
+        {
+            node.varAttr.isPointer = false;
+        }
+        return errors.size() == errorsBefore;
     }
 
     bool ASTChecker::visit(VarDeclaration& node)
