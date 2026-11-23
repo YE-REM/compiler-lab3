@@ -314,8 +314,12 @@ namespace FE::AST
     {
         Operator  op;
         ExprValue val;
+        // NodeAttr(Operator o = Operator::UNK, const ExprValue& v = ExprValue()) : op(o), val(v) {}
+        bool      typeChecked;
 
-        NodeAttr(Operator o = Operator::UNK, const ExprValue& v = ExprValue()) : op(o), val(v) {}
+        NodeAttr(Operator o = Operator::UNK, const ExprValue& v = ExprValue())
+            : op(o), val(v), typeChecked(false)
+        {}
     };
 }  // namespace FE::AST
 
