@@ -1,0 +1,4 @@
+
+int calls=0;
+int hit(){calls=calls+1; return 1;}
+int main(){int x=0||hit(); int y=0&&hit(); return x+y+calls;}
