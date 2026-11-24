@@ -166,11 +166,19 @@ namespace ME
         size_t getNewRegId() { return curFunc->getNewRegId(); }
         void   insert(Instruction* inst) { curBlock->insertBack(inst); }
 
+        bool   currentBlockTerminated() const;
+        size_t newEntryAlloca(DataType type, const std::vector<int>& dims = {});
+        size_t genExpr(FE::AST::ExprNode& node, Module* m);
+        size_t castReg(size_t reg, DataType from, DataType to);
+        Operand* getLValueAddress(FE::AST::LeftValExpr& node, Module* m);
+
       private:
         DataType convert(FE::AST::Type* at);
-        void     handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Block* block, Module* m);
+        // void     handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Block* block, Module* m);
+        void     handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Module* m);
         void     handleBinaryCalc(
-                FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Block* block, Module* m);
+                // FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Block* block, Module* m);
+                FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Module* m);
 
       private:
         LoadInst* createLoadInst(DataType t, Operand* ptr, size_t resReg);

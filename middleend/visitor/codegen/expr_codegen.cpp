@@ -1,4 +1,5 @@
 #include <middleend/visitor/codegen/ast_codegen.h>
+#include <algorithm>
 
 namespace ME
 {
@@ -6,9 +7,14 @@ namespace ME
     {
         // TODO(Lab 3-2): 生成左值表达式的取址/取值 IR
         // 查找变量位置（全局或局部），处理数组下标/GEP，必要时发出load
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement LeftValExpr IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement LeftValExpr IR generation");
+
+        Operand* address = getLValueAddress(node, m);
+
+        size_t valueReg = getNewRegId();
+        insert(createLoadInst(convert(node.attr.val.value.type), address, valueReg));
     }
 
     void ASTCodeGen::visit(FE::AST::LiteralExpr& node, Module* m)
@@ -40,60 +46,187 @@ namespace ME
     void ASTCodeGen::visit(FE::AST::UnaryExpr& node, Module* m)
     {
         // TODO(Lab 3-2): 生成一元运算的 IR（访问操作数、必要的类型转换、发出运算指令）
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement UnaryExpr IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement UnaryExpr IR generation");
+
+        if (!node.expr) return;
+        handleUnaryCalc(*node.expr, node.op, m);
     }
 
     void ASTCodeGen::handleAssign(FE::AST::LeftValExpr& lhs, FE::AST::ExprNode& rhs, Module* m)
     {
         // TODO(Lab 3-2): 生成赋值语句的 IR（计算右值、类型转换、store 到左值地址）
-        (void)lhs;
-        (void)rhs;
-        (void)m;
-        TODO("Lab3-2: Implement assignment IR generation");
+        // (void)lhs;
+        // (void)rhs;
+        // (void)m;
+        // TODO("Lab3-2: Implement assignment IR generation");
+
+        Operand* address = getLValueAddress(lhs, m);
+        const auto type = convert(lhs.attr.val.value.type);
+        size_t value = genExpr(rhs, m);
+        value = castReg(value, convert(rhs.attr.val.value.type), type);
+        insert(createStoreInst(type, value, address));
     }
-    void ASTCodeGen::handleLogicalAnd(
-        FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
-    {
+
+    // void ASTCodeGen::handleLogicalAnd(
+        // FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
+    // {
         // TODO(Lab 3-2): 生成短路与的基本块与条件分支
-        (void)node;
-        (void)lhs;
-        (void)rhs;
-        (void)m;
-        TODO("Lab3-2: Implement logical AND codegen");
-    }
-    void ASTCodeGen::handleLogicalOr(
-        FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
-    {
+        // (void)node;
+        // (void)lhs;
+        // (void)rhs;
+        // (void)m;
+        // TODO("Lab3-2: Implement logical AND codegen");
+    // }
+
+    // void ASTCodeGen::handleLogicalOr(
+        // FE::AST::BinaryExpr& node, FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, Module* m)
+    // {
         // TODO(Lab 3-2): 生成短路或的基本块与条件分支
-        (void)node;
-        (void)lhs;
-        (void)rhs;
-        (void)m;
-        TODO("Lab3-2: Implement logical OR codegen");
-    }
+        // (void)node;
+        // (void)lhs;
+        // (void)rhs;
+        // (void)m;
+        // TODO("Lab3-2: Implement logical OR codegen");
+    // }
+
     void ASTCodeGen::visit(FE::AST::BinaryExpr& node, Module* m)
     {
         // TODO(Lab 3-2): 生成二元表达式 IR（含赋值、逻辑与/或、算术/比较）
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement BinaryExpr IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement BinaryExpr IR generation");
+
+        if (!node.lhs || !node.rhs) return;
+
+        if (node.op == FE::AST::Operator::ASSIGN)
+        {
+            auto* lhs = dynamic_cast<FE::AST::LeftValExpr*>(node.lhs);
+            if (!lhs) ERROR("Assignment lhs is not a left-value expression");
+            handleAssign(*lhs, *node.rhs, m);
+            return;
+        }
+
+        // 长加法链的迭代生成，避免左深 AST 造成递归爆栈。
+        if (node.op == FE::AST::Operator::ADD && !node.attr.val.value.isTensor && !node.attr.val.value.isArray)
+        {
+            std::vector<FE::AST::ExprNode*> operands;
+            FE::AST::ExprNode*              cur = &node;
+            while (auto* b = dynamic_cast<FE::AST::BinaryExpr*>(cur))
+            {
+                if (b->op != FE::AST::Operator::ADD || !b->lhs || !b->rhs) break;
+                operands.push_back(b->rhs);
+                cur = b->lhs;
+            }
+            if (operands.size() > 1)
+            {
+                operands.push_back(cur);
+                std::reverse(operands.begin(), operands.end());
+
+                size_t   accReg  = genExpr(*operands[0], m);
+                DataType accType = convert(operands[0]->attr.val.value.type);
+                for (size_t i = 1; i < operands.size(); ++i)
+                {
+                    size_t   rhsReg  = genExpr(*operands[i], m);
+                    DataType rhsType = convert(operands[i]->attr.val.value.type);
+                    DataType pType   = (accType == DataType::F32 || rhsType == DataType::F32) ? DataType::F32
+                                                                                              : DataType::I32;
+                    accReg = castReg(accReg, accType, pType);
+                    rhsReg = castReg(rhsReg, rhsType, pType);
+                    size_t res = getNewRegId();
+                    insert(new ArithmeticInst(pType == DataType::F32 ? Operator::FADD : Operator::ADD, pType,
+                        getRegOperand(accReg), getRegOperand(rhsReg), getRegOperand(res)));
+                    accReg  = res;
+                    accType = pType;
+                }
+                return;
+            }
+        }
+
+        handleBinaryCalc(*node.lhs, *node.rhs, node.op, m);
     }
 
     void ASTCodeGen::visit(FE::AST::CallExpr& node, Module* m)
     {
         // TODO(Lab 3-2): 生成函数调用 IR（准备参数、可选返回寄存器、发出call）
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement CallExpr IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement CallExpr IR generation");
+
+        const auto& f = *funcDecls.at(node.func);
+        CallInst::argList args;
+        for (size_t i = 0; node.args && i < node.args->size(); ++i)
+        {
+            auto& expr = *(*node.args)[i];
+            const auto& param = *(*f.params)[i];
+            const auto type = param.varAttr.isPointer ? DataType::PTR : convert(param.type);
+            size_t reg = genExpr(expr, m);
+            if (type != DataType::PTR) reg = castReg(reg, convert(expr.attr.val.value.type), type);
+            args.emplace_back(type, getRegOperand(reg));
+        }
+
+        const auto ret = convert(f.retType);
+        if (ret == DataType::VOID)
+            insert(createCallInst(ret, f.entry->getName(), args));
+        else
+            insert(createCallInst(ret, f.entry->getName(), args, getNewRegId()));
     }
 
     void ASTCodeGen::visit(FE::AST::CommaExpr& node, Module* m)
     {
         // TODO(Lab 3-2): 依序生成逗号表达式每个子表达式的 IR
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement CommaExpr IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement CommaExpr IR generation");
+
+        if (!node.exprs) return;
+        for (FE::AST::ExprNode* e : *node.exprs)
+        {
+            if (e) genExpr(*e, m);
+        }
     }
+
+    Operand* ASTCodeGen::getLValueAddress(FE::AST::LeftValExpr& node, Module* m)
+    {
+        const FE::AST::VarAttr* attr;
+        Operand* base;
+        size_t local = name2reg.getReg(node.entry);
+        if (local == static_cast<size_t>(-1))
+        {
+            attr = &glbSymbols.at(node.entry);
+            base = getGlobalOperand(node.entry->getName());
+        }
+        else
+        {
+            attr = &reg2attr.at(local);
+            base = getRegOperand(local);
+        }
+        if (attr->arrayDims.empty()) return base;
+
+        auto gepDims = attr->arrayDims;
+        std::vector<Operand*> indices;
+        // 数组对象先跨过外层指针。形参指向第一项，GEP 直接使用尾维。
+        if (attr->isPointer)
+            gepDims.erase(gepDims.begin());
+        else
+            indices.push_back(getImmeI32Operand(0));
+
+        const size_t used = node.indices ? node.indices->size() : 0;
+        if (node.indices)
+        {
+            for (auto* subscript : *node.indices)
+            {
+                size_t reg = castReg(genExpr(*subscript, m), convert(subscript->attr.val.value.type), DataType::I32);
+                indices.push_back(getRegOperand(reg));
+            }
+        }
+        // 少下标一次时保留子数组的首项地址，供参数传递。
+        if (used < attr->arrayDims.size()) indices.push_back(getImmeI32Operand(0));
+
+        size_t result = getNewRegId();
+        insert(createGEP_I32Inst(convert(attr->type), base, gepDims, indices, result));
+        return getRegOperand(result);
+    }
+
 }  // namespace ME

@@ -206,7 +206,8 @@ namespace ME
         }
     };
 
-    void ASTCodeGen::handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Block* block, Module* m)
+    // void ASTCodeGen::handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Block* block, Module* m)
+    void ASTCodeGen::handleUnaryCalc(FE::AST::ExprNode& node, FE::AST::Operator uop, Module* m)
     {
         using UnaryOpFunc                                           = void (*)(ASTCodeGen*, Block*, size_t);
         static std::map<FE::AST::Operator, UnaryOpFunc> unaryIntOps = {
@@ -220,15 +221,16 @@ namespace ME
             {FE::AST::Operator::NOT, UnaryOperators::notFloat},
         };
 
-        apply(*this, node, m);
-        size_t srcReg = getMaxReg();
-
+        // apply(*this, node, m);
+        // size_t srcReg = getMaxReg();
+        size_t   srcReg  = genExpr(node, m);
         DataType srcType = convert(node.attr.val.value.type);
 
         if (srcType == DataType::I1)
         {
             auto convInsts = createTypeConvertInst(srcType, DataType::I32, srcReg);
-            for (auto& inst : convInsts) block->insert(inst);
+            // for (auto& inst : convInsts) block->insert(inst);
+            for (auto& inst : convInsts) insert(inst);
             srcReg  = getMaxReg();
             srcType = DataType::I32;
         }
@@ -245,7 +247,8 @@ namespace ME
 
         if (!opFunc) ERROR("Unary op not supported");
 
-        opFunc(this, block, srcReg);
+        // opFunc(this, block, srcReg);
+        opFunc(this, curBlock, srcReg);
     }
 
     DataType promoteType(DataType t1, DataType t2)
@@ -256,7 +259,8 @@ namespace ME
     }
 
     void ASTCodeGen::handleBinaryCalc(
-        FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Block* block, Module* m)
+        // FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Block* block, Module* m)
+        FE::AST::ExprNode& lhs, FE::AST::ExprNode& rhs, FE::AST::Operator bop, Module* m)
     {
         using BinaryOpFunc                                            = void (*)(ASTCodeGen*, Block*, size_t, size_t);
         static std::map<FE::AST::Operator, BinaryOpFunc> binaryIntOps = {
@@ -286,10 +290,12 @@ namespace ME
             {FE::AST::Operator::NEQ, BinaryOperators::neqFloat},
         };
 
-        apply(*this, lhs, m);
-        size_t lhsReg = getMaxReg();
-        apply(*this, rhs, m);
-        size_t rhsReg = getMaxReg();
+        // apply(*this, lhs, m);
+        // size_t lhsReg = getMaxReg();
+        // apply(*this, rhs, m);
+        // size_t rhsReg = getMaxReg();
+        size_t lhsReg = genExpr(lhs, m);
+        size_t rhsReg = genExpr(rhs, m);
 
         DataType lhsType = convert(lhs.attr.val.value.type);
         DataType rhsType = convert(rhs.attr.val.value.type);
@@ -297,30 +303,32 @@ namespace ME
         ASSERT(rhsType == DataType::I1 || rhsType == DataType::I32 || rhsType == DataType::F32);
         DataType pType = promoteType(lhsType, rhsType);
 
-        if (pType == DataType::I1)
-        {
-            auto lhsConvInsts = createTypeConvertInst(pType, DataType::I32, lhsReg);
-            for (auto& inst : lhsConvInsts) block->insert(inst);
-            lhsReg = getMaxReg();
+        // if (pType == DataType::I1)
+        // {
+            // auto lhsConvInsts = createTypeConvertInst(pType, DataType::I32, lhsReg);
+            // for (auto& inst : lhsConvInsts) block->insert(inst);
+            // lhsReg = getMaxReg();
+            // auto rhsConvInsts = createTypeConvertInst(pType, DataType::I32, rhsReg);
+            // for (auto& inst : rhsConvInsts) block->insert(inst);
+            // rhsReg = getMaxReg();
+            // pType = DataType::I32;
+        // }
+        // else if (lhsType != pType)
+        // {
+            // auto convInsts = createTypeConvertInst(lhsType, pType, lhsReg);
+            // for (auto& inst : convInsts) block->insert(inst);
+            // lhsReg = getMaxReg();
+        // }
+        // else if (rhsType != pType)
+        // {
+            // auto convInsts = createTypeConvertInst(rhsType, pType, rhsReg);
+            // for (auto& inst : convInsts) block->insert(inst);
+            // rhsReg = getMaxReg();
+        // }
+        if (pType == DataType::I1) pType = DataType::I32;
 
-            auto rhsConvInsts = createTypeConvertInst(pType, DataType::I32, rhsReg);
-            for (auto& inst : rhsConvInsts) block->insert(inst);
-            rhsReg = getMaxReg();
-
-            pType = DataType::I32;
-        }
-        else if (lhsType != pType)
-        {
-            auto convInsts = createTypeConvertInst(lhsType, pType, lhsReg);
-            for (auto& inst : convInsts) block->insert(inst);
-            lhsReg = getMaxReg();
-        }
-        else if (rhsType != pType)
-        {
-            auto convInsts = createTypeConvertInst(rhsType, pType, rhsReg);
-            for (auto& inst : convInsts) block->insert(inst);
-            rhsReg = getMaxReg();
-        }
+        lhsReg = castReg(lhsReg, lhsType, pType);
+        rhsReg = castReg(rhsReg, rhsType, pType);
 
         BinaryOpFunc opFunc = nullptr;
         if (pType == DataType::I32)
@@ -331,6 +339,7 @@ namespace ME
             ERROR("Binary op type not supported");
 
         if (!opFunc) ERROR("Binary op not supported");
-        opFunc(this, block, lhsReg, rhsReg);
+        // opFunc(this, block, lhsReg, rhsReg);
+        opFunc(this, curBlock, lhsReg, rhsReg);
     }
 }  // namespace ME
