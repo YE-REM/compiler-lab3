@@ -1,0 +1,17 @@
+Incremental build from the verified matching source copy: PASS
+Scalar regression: 3/3 PASS
+array_address: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=16, actual=16
+  stdout: expected='', actual=''
+float_array: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=5, actual=5
+  stdout: expected='0x1.8p+0\n', actual='0x1.8p+0\n'
+  stderr: 'TOTAL: 0H-0M-0S-0us\n'
+typed_array_gep: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=22, actual=22
+  stdout: expected='', actual=''
+Array cases: 3/3 PASS
+Typed GEP check: PASS
+Course Basic: started
+Basic LLVM -O0: 100/100
+Validation: PASS
