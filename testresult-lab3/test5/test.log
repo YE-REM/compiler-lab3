@@ -1,0 +1,22 @@
+Build: PASS
+big_zero: LLVM IR verification PASS, link PASS, run PASS (exit 3)
+nested_init: LLVM IR verification PASS, link PASS, run PASS (exit 44)
+unaligned_init: LLVM IR verification PASS, link PASS, run PASS (exit 1)
+extra_scalar_braces: LLVM IR verification PASS, link PASS, run PASS (exit 13)
+float_partial_zero: LLVM IR verification PASS, link PASS, run PASS (exit 0)
+initializer_order: LLVM IR verification PASS, link PASS, run PASS (exit 3)
+oversized_scalar_braces: semantic rejection PASS (exit 1)
+Semantic check failed with 1 errors.
+Error: too many initializers for scalar element at line 1
+oversized_subarray: semantic rejection PASS (exit 1)
+Semantic check failed with 1 errors.
+Error: too many initializers for sub-array at line 1
+big_zero: compact LLVM IR PASS (1326 bytes)
+Array initializer cases: 8/8 PASS
+declarations: PASS
+semantic: PASS
+scalar_ir: PASS
+arrays: PASS
+Basic LLVM -O0: 100/100 PASS
+Advanced LLVM -O0: 100/100 PASS
+Validation: PASS

@@ -1,0 +1,4 @@
+
+int g=4;
+int f(int x, int y) { int a=x*y; a=a+g; return a/2; }
+int main(){ int x=f(6,5); putint(x); putch(10); return x; }

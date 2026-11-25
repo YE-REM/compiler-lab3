@@ -51,9 +51,32 @@ namespace ME
     void ASTCodeGen::handleGlobalVarDecl(FE::AST::VarDeclStmt* decls, Module* m)
     {
         // TODO(Lab 3-2): 生成全局变量声明 IR（支持标量与数组的初值）
-        (void)decls;
-        (void)m;
-        TODO("Lab3-2: Implement global var declaration IR generation");
+        // (void)decls;
+        // (void)m;
+        // TODO("Lab3-2: Implement global var declaration IR generation");
+        // 全局初值由语义检查折叠，标量取 constValue，数组取展平后的属性。
+        for (auto* decl : *decls->decl->decls)
+        {
+            auto* lval = static_cast<FE::AST::LeftValExpr*>(decl->lval);
+            const auto& attr = glbSymbols.at(lval->entry);
+            const auto type = convert(attr.type);
+            const auto& name = lval->entry->getName();
+            if (!attr.arrayDims.empty())
+            {
+                m->globalVars.push_back(new GlbVarDeclInst(type, name, attr));
+                continue;
+            }
+
+            Operand* init = nullptr;
+            if (attr.isInitialized)
+            {
+                if (type == DataType::F32)
+                    init = getImmeF32Operand(attr.constValue.getFloat());
+                else
+                    init = getImmeI32Operand(attr.constValue.getInt());
+            }
+            m->globalVars.push_back(new GlbVarDeclInst(type, name, init));
+        }
     }
 
     void ASTCodeGen::visit(FE::AST::Root& node, Module* m)
@@ -63,9 +86,18 @@ namespace ME
 
         // TODO(Lab 3-2): 生成模块级 IR
         // 处理顶层语句：全局变量声明、函数定义等
-        (void)node;
-        (void)m;
-        TODO("Lab3-2: Implement Root IR generation");
+        // (void)node;
+        // (void)m;
+        // TODO("Lab3-2: Implement Root IR generation");
+        
+        if (!node.getStmts()) return;
+        for (auto* stmt : *node.getStmts())
+        {
+            if (auto* decl = dynamic_cast<FE::AST::VarDeclStmt*>(stmt))
+                handleGlobalVarDecl(decl, m);
+            else if (auto* func = dynamic_cast<FE::AST::FuncDeclStmt*>(stmt))
+                apply(*this, *func, m);
+        }
     }
 
     LoadInst* ASTCodeGen::createLoadInst(DataType t, Operand* ptr, size_t resReg)
@@ -268,4 +300,30 @@ namespace ME
 
         return insts;
     }
+    
+    bool ASTCodeGen::currentBlockTerminated() const
+    {
+        return !curBlock->insts.empty() && curBlock->insts.back()->isTerminator();
+    }
+
+    size_t ASTCodeGen::newEntryAlloca(DataType type, const std::vector<int>& dims)
+    {
+        size_t reg = getNewRegId();
+        getBlock(0)->insertFront(createAllocaInst(type, reg, dims));
+        return reg;
+    }
+
+    size_t ASTCodeGen::genExpr(FE::AST::ExprNode& node, Module* m)
+    {
+        apply(*this, node, m);
+        return getMaxReg();
+    }
+
+    size_t ASTCodeGen::castReg(size_t reg, DataType from, DataType to)
+    {
+        if (from == to) return reg;
+        for (auto* inst : createTypeConvertInst(from, to, reg)) insert(inst);
+        return getMaxReg();
+    }
+
 }  // namespace ME

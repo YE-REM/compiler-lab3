@@ -1,0 +1,3 @@
+
+float f(float a[]) { return a[1]/2; }
+int main(){float a[2]; a[1]=3; putfloat(f(a)); putch(10); return f(a)+4;}

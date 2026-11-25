@@ -1,0 +1,5 @@
+
+int g[2][3];
+int row(int a[],int j){return a[j];}
+int matrix(int a[][3],int i,int j){a[i][j]=11; return row(a[i],j);}
+int main(){int i=1; int j=2; return matrix(g,i,j)+g[i][j];}

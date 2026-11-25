@@ -1,0 +1,4 @@
+
+float g=3; int n=2.5;
+float scale(float x) { return x*g; }
+int main(){ float y=scale(n); return y; }

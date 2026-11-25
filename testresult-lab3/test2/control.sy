@@ -1,0 +1,6 @@
+
+int bump(){ putint(9); return 1; }
+int main(){ int i=0; int s=0;
+  while(i<5){ i=i+1; if(i==2) continue; if(i==4) break; s=s+i; }
+  if(0&&bump()) return 1; if(1||bump()) return s; return 0;
+}
