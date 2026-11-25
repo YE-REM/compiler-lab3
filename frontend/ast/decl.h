@@ -75,6 +75,15 @@ namespace FE::AST
         // 语义分析阶段填写的符号属性，供 IR 生成复用
         VarAttr varAttr;
 
+        struct ArrayInitElement
+        {
+            size_t       offset;
+            Initializer* node;  // 由 init 持有
+        };
+
+        // 只记录显式元素的行主序偏移，局部 IR 生成直接使用。
+        std::vector<ArrayInitElement> arrayInitElements;
+
       public:
         VarDeclarator(ExprNode* lval, InitDecl* init = nullptr, int line_num = -1, int col_num = -1)
             : DeclNode(line_num, col_num), lval(lval), init(init)

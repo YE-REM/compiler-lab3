@@ -1,0 +1,8 @@
+int calls = 0;
+int next() { calls = calls + 1; return calls; }
+int main() {
+    int a[2][3] = {{next(),next()},{next()}};
+    if (a[0][0] != 1 || a[0][1] != 2 || a[1][0] != 3) return 10;
+    if (a[0][2] != 0 || a[1][1] != 0 || a[1][2] != 0) return 11;
+    return calls;
+}

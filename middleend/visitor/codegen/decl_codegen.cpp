@@ -1,5 +1,6 @@
 #include <middleend/visitor/codegen/ast_codegen.h>
 #include <debug.h>
+#include <numeric>
 
 namespace ME
 {
@@ -52,7 +53,29 @@ namespace ME
                 continue;
             }
 
-            ERROR("Array initializer lowering has not been implemented");
+            // 聚合存储先转成首元素地址。初始化偏移按元素计数。
+            size_t base = getNewRegId();
+            std::vector<Operand*> zeros(dims.size() + 1, getImmeI32Operand(0));
+            insert(createGEP_I32Inst(type, getRegOperand(storage), dims, zeros, base));
+            const auto count = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int>());
+
+            // 列表未写到的位置保持为零。显式初值使用语义阶段记录的偏移。
+            CallInst::argList args = {
+                {DataType::PTR, getRegOperand(base)},
+                {DataType::I8, getImmeI32Operand(0)},
+                {DataType::I32, getImmeI32Operand(static_cast<int>(4ULL * count))},
+                {DataType::I1, getImmeI32Operand(0)},
+            };
+            insert(createCallInst(DataType::VOID, "llvm.memset.p0.i32", args));
+            for (const auto& [offset, element] : decl->arrayInitElements)
+            {
+                auto& expr = *element->init_val;
+                size_t value = castReg(genExpr(expr, m), convert(expr.attr.val.value.type), type);
+                size_t address = getNewRegId();
+                insert(createGEP_I32Inst(type, getRegOperand(base), {},
+                    {getImmeI32Operand(static_cast<int>(offset))}, address));
+                insert(createStoreInst(type, value, getRegOperand(address)));
+            }
         }
     }
 }  // namespace ME

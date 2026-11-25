@@ -8,37 +8,6 @@ namespace FE::AST
 {
     namespace
     {
-        int product(const std::vector<int>& dims)
-        {
-            if (dims.empty()) return 1;
-            long long p = 1;
-            for (int d : dims)
-            {
-                if (d <= 0) return 0;
-                p *= d;
-                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
-            }
-            return static_cast<int>(p);
-        }
-
-        int suffixProduct(const std::vector<int>& dims, size_t from)
-        {
-            long long p = 1;
-            for (size_t i = from; i < dims.size(); ++i)
-            {
-                if (dims[i] <= 0) return 0;
-                p *= dims[i];
-                if (p > std::numeric_limits<int>::max()) return std::numeric_limits<int>::max();
-            }
-            return static_cast<int>(p);
-        }
-
-        int alignUp(int value, int alignment)
-        {
-            if (alignment <= 1) return value;
-            return ((value + alignment - 1) / alignment) * alignment;
-        }
-
         VarValue zeroValue(Type* elem)
         {
             if (elem && elem->getBaseType() == Type_t::FLOAT) return VarValue(0.0f);
@@ -286,6 +255,7 @@ namespace FE::AST
 
     bool ASTChecker::checkVarInit(VarDeclarator& decl, VarAttr& attr, bool isGlobal)
     {
+        decl.arrayInitElements.clear();
         if (!decl.init)
         {
             if (attr.isConstDecl)
@@ -297,7 +267,7 @@ namespace FE::AST
         }
 
         Type*            elem = elementType(attr.type);
-        std::vector<int> dims = attr.arrayDims;
+        const auto& dims = attr.arrayDims;
 
         if (dims.empty())
         {
@@ -349,155 +319,102 @@ namespace FE::AST
             return false;
         }
 
-        int total = product(dims);
-        if (total <= 0)
-        {
-            reportError("invalid array/tensor size", decl);
-            return false;
-        }
-
-        // 只记录显式初始化的前缀；末尾缺省元素由常量求值和 IR 打印按零处理。
+        // 缺省尾部保持隐式零，避免按整个数组容量分配语义值。
         attr.initList.clear();
-
-        size_t cursor = 0;
-        flattenInitializer(decl.init, dims, elem, attr, cursor, isGlobal, decl);
-        if (static_cast<int>(cursor) > total)
-        {
-            reportError("too many initializers", decl);
-            return false;
-        }
+        if (!flattenInitializer(*init, decl, attr, isGlobal)) return false;
         attr.isInitialized = true;
         return true;
     }
 
-    void ASTChecker::flattenInitializer(InitDecl* init, const std::vector<int>& dims, Type* elem, VarAttr& attr,
-        size_t& cursor, bool isGlobal, const Node& loc)
+    bool ASTChecker::flattenInitializer(InitializerList& init, VarDeclarator& decl, VarAttr& attr, bool isGlobal)
     {
-        if (!init) return;
-        int total = product(dims);
-        if (total <= 0) return;
-        if (cursor >= static_cast<size_t>(total))
+        const auto& dims = attr.arrayDims;
+        const size_t rank = dims.size();
+        Type* elem = elementType(attr.type);
+
+        // strides[d] 是从深度 d 开始的子对象容量。深度 rank 是单个标量。
+        std::vector<size_t> strides(rank + 1, 1);
+        for (size_t d = rank; d > 0; --d)
         {
-            reportError("too many initializers", loc);
-            cursor = static_cast<size_t>(total);
-            return;
+            int extent = dims[d - 1];
+            if (extent <= 0 || strides[d] > static_cast<size_t>(std::numeric_limits<int>::max()) / extent)
+            {
+                reportError("invalid array/tensor size", decl);
+                return false;
+            }
+            strides[d - 1] = strides[d] * static_cast<size_t>(extent);
         }
 
-        auto stride = [&](size_t d) -> int {
-            if (d >= dims.size()) return 1;
-            return suffixProduct(dims, d);
-        };
+        std::function<bool(InitializerList&, size_t, size_t)> fill =
+            [&](InitializerList& list, size_t depth, size_t start) {
+                if (attr.isTensor && depth == rank)
+                {
+                    reportError("tensor initializer nesting exceeds its rank", list);
+                    return false;
+                }
+                if (!list.init_list)
+                {
+                    reportError("invalid initializer list", list);
+                    return false;
+                }
 
-        std::function<void(InitDecl*, size_t)> fill = [&](InitDecl* node, size_t desiredDepth) {
-            if (!node) return;
-            if (cursor >= static_cast<size_t>(total))
-            {
-                reportError("too many initializers", loc);
-                cursor = static_cast<size_t>(total);
-                return;
-            }
-
-            if (Initializer* scalar = dynamic_cast<Initializer*>(node))
-            {
-                apply(*this, *scalar);
-                ExprNode* val = scalar->init_val;
-                if (!val) return;
-                const VarValue& v = val->attr.val.value;
-                if (!v.type || v.type == voidType)
-                {
-                    reportError("void value cannot be used as an initializer", *val);
-                    return;
-                }
-                if (!isArithmeticScalar(v))
-                {
-                    reportError("initializer element must be a scalar", *val);
-                    return;
-                }
-                if (isGlobal && !val->attr.val.isConstexpr)
-                {
-                    reportError("global initializer element must be a constant expression", *val);
-                }
-                if (attr.isConstDecl && !val->attr.val.isConstexpr)
-                {
-                    reportError("const initializer element must be a constant expression", *val);
-                }
-                if (isGlobal || attr.isConstDecl)
-                {
-                    if (attr.initList.size() <= cursor) attr.initList.resize(cursor + 1, zeroValue(elem));
-                    attr.initList[cursor] = convertValue(v, elem);
-                }
-                ++cursor;
-                return;
-            }
-
-            InitializerList* list = dynamic_cast<InitializerList*>(node);
-            if (!list || !list->init_list)
-            {
-                reportError("invalid initializer", loc);
-                return;
-            }
-
-            if (desiredDepth >= dims.size())
-            {
-                if (attr.isTensor)
-                {
-                    reportError("tensor initializer nesting exceeds its rank", *list);
-                    return;
-                }
-                // 沿用普通数组对标量外层花括号的兼容处理。
-                for (InitDecl* child : *list->init_list)
+                size_t cursor = start;
+                const size_t end = start + strides[depth];
+                for (InitDecl* child : *list.init_list)
                 {
                     if (!child) continue;
-                    fill(child, dims.size());
-                    return;
-                }
-                return;
-            }
+                    if (cursor == end)
+                    {
+                        const char* message = depth == 0 ? "too many initializers" : "too many initializers for sub-array";
+                        if (depth == rank) message = "too many initializers for scalar element";
+                        reportError(message, *child);
+                        return false;
+                    }
 
-            size_t depth = desiredDepth;
-            // 如果当前位置没有对齐到 desiredDepth 的子数组边界，
-            // 说明前面的扁平初始化已经进入了更深一层的子数组。
-            while (depth + 1 < dims.size() && cursor % static_cast<size_t>(stride(depth)) != 0)
-            {
-                ++depth;
-            }
-            if (depth >= dims.size())
-            {
-                for (InitDecl* child : *list->init_list)
-                {
-                    if (!child) continue;
-                    fill(child, dims.size());
-                    return;
-                }
-                return;
-            }
+                    if (auto* nested = dynamic_cast<InitializerList*>(child))
+                    {
+                        // 按当前下标选择能对齐的最大子对象，不把游标移到下一行。
+                        // 若各层都未对齐，这层花括号就包住当前位置的一个标量。
+                        size_t childDepth = std::min(depth + 1, rank);
+                        while (childDepth < rank && cursor % strides[childDepth] != 0) ++childDepth;
+                        if (!fill(*nested, childDepth, cursor)) return false;
+                        // 一个列表占完整的子对象空间，余下位置隐式补零。
+                        cursor += strides[childDepth];
+                        continue;
+                    }
 
-            int cap   = stride(depth);
-            int start = static_cast<int>(cursor);
-            int limit = std::min(total, start + cap);
-
-            for (InitDecl* child : *list->init_list)
-            {
-                if (!child) continue;
-                bool isList = dynamic_cast<InitializerList*>(child) != nullptr;
-                fill(child, depth + 1);
-                if (isList)
-                {
-                    int childStride = (depth + 1 < dims.size()) ? stride(depth + 1) : 1;
-                    cursor          = static_cast<size_t>(alignUp(static_cast<int>(cursor), childStride));
+                    auto* scalar = dynamic_cast<Initializer*>(child);
+                    if (!scalar || !scalar->init_val)
+                    {
+                        reportError("invalid initializer element", *child);
+                        return false;
+                    }
+                    if (!apply(*this, *scalar)) return false;
+                    ExprNode& value = *scalar->init_val;
+                    const VarValue& v = value.attr.val.value;
+                    if (!isArithmeticScalar(v))
+                    {
+                        reportError("initializer element must be a scalar", value);
+                        return false;
+                    }
+                    if ((isGlobal || attr.isConstDecl) && !value.attr.val.isConstexpr)
+                    {
+                        reportError(isGlobal ? "global initializer element must be a constant expression"
+                                             : "const initializer element must be a constant expression",
+                            value);
+                        return false;
+                    }
+                    if (!isGlobal) decl.arrayInitElements.push_back({cursor, scalar});
+                    if (isGlobal || attr.isConstDecl)
+                    {
+                        if (attr.initList.size() <= cursor) attr.initList.resize(cursor + 1, zeroValue(elem));
+                        attr.initList[cursor] = convertValue(v, elem);
+                    }
+                    ++cursor;
                 }
-                if (static_cast<int>(cursor) > limit)
-                {
-                    reportError("too many initializers for sub-array", *child);
-                    cursor = static_cast<size_t>(limit);
-                    break;
-                }
-            }
-            // 空列表也要占用整个子数组
-            cursor = static_cast<size_t>(start + cap);
-            if (static_cast<int>(cursor) > total) cursor = static_cast<size_t>(total);
-        };
+                return true;
+            };
 
-        fill(init, 0);
+        return fill(init, 0, 0);
     }
 }  // namespace FE::AST

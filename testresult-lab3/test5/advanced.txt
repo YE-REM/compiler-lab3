@@ -1,0 +1,706 @@
+
+1_long_array2.sy                Compiling sy to ir
+1_long_array2.sy                Checking IR syntax
+1_long_array2.sy                Compiling ir to object
+1_long_array2.sy                Linking object to exec
+1_long_array2.sy                Executing
+1_long_array2.sy                Accepted
+
+2_line_search.sy                Compiling sy to ir
+2_line_search.sy                Checking IR syntax
+2_line_search.sy                Compiling ir to object
+2_line_search.sy                Linking object to exec
+2_line_search.sy                Executing
+2_line_search.sy                Accepted
+
+3_exgcd.sy                      Compiling sy to ir
+3_exgcd.sy                      Checking IR syntax
+3_exgcd.sy                      Compiling ir to object
+3_exgcd.sy                      Linking object to exec
+3_exgcd.sy                      Executing
+3_exgcd.sy                      Accepted
+
+4_palindrome_number.sy          Compiling sy to ir
+4_palindrome_number.sy          Checking IR syntax
+4_palindrome_number.sy          Compiling ir to object
+4_palindrome_number.sy          Linking object to exec
+4_palindrome_number.sy          Executing
+4_palindrome_number.sy          Accepted
+
+5_bin_search.sy                 Compiling sy to ir
+5_bin_search.sy                 Checking IR syntax
+5_bin_search.sy                 Compiling ir to object
+5_bin_search.sy                 Linking object to exec
+5_bin_search.sy                 Executing
+5_bin_search.sy                 Accepted
+
+6_int_split.sy                  Compiling sy to ir
+6_int_split.sy                  Checking IR syntax
+6_int_split.sy                  Compiling ir to object
+6_int_split.sy                  Linking object to exec
+6_int_split.sy                  Executing
+6_int_split.sy                  Accepted
+
+7_chaos_token.sy                Compiling sy to ir
+7_chaos_token.sy                Checking IR syntax
+7_chaos_token.sy                Compiling ir to object
+7_chaos_token.sy                Linking object to exec
+7_chaos_token.sy                Executing
+7_chaos_token.sy                Accepted
+
+8_sort_test2.sy                 Compiling sy to ir
+8_sort_test2.sy                 Checking IR syntax
+8_sort_test2.sy                 Compiling ir to object
+8_sort_test2.sy                 Linking object to exec
+8_sort_test2.sy                 Executing
+8_sort_test2.sy                 Accepted
+
+9_many_indirections.sy          Compiling sy to ir
+9_many_indirections.sy          Checking IR syntax
+9_many_indirections.sy          Compiling ir to object
+9_many_indirections.sy          Linking object to exec
+9_many_indirections.sy          Executing
+9_many_indirections.sy          Accepted
+
+10_multiplication_puzzle.sy     Compiling sy to ir
+10_multiplication_puzzle.sy     Checking IR syntax
+10_multiplication_puzzle.sy     Compiling ir to object
+10_multiplication_puzzle.sy     Linking object to exec
+10_multiplication_puzzle.sy     Executing
+10_multiplication_puzzle.sy     Accepted
+
+11_sort_test4.sy                Compiling sy to ir
+11_sort_test4.sy                Checking IR syntax
+11_sort_test4.sy                Compiling ir to object
+11_sort_test4.sy                Linking object to exec
+11_sort_test4.sy                Executing
+11_sort_test4.sy                Accepted
+
+12_insert_order.sy              Compiling sy to ir
+12_insert_order.sy              Checking IR syntax
+12_insert_order.sy              Compiling ir to object
+12_insert_order.sy              Linking object to exec
+12_insert_order.sy              Executing
+12_insert_order.sy              Accepted
+
+13_union_find.sy                Compiling sy to ir
+13_union_find.sy                Checking IR syntax
+13_union_find.sy                Compiling ir to object
+13_union_find.sy                Linking object to exec
+13_union_find.sy                Executing
+13_union_find.sy                Accepted
+
+14_sort_test1.sy                Compiling sy to ir
+14_sort_test1.sy                Checking IR syntax
+14_sort_test1.sy                Compiling ir to object
+14_sort_test1.sy                Linking object to exec
+14_sort_test1.sy                Executing
+14_sort_test1.sy                Accepted
+
+15_many_params2.sy              Compiling sy to ir
+15_many_params2.sy              Checking IR syntax
+15_many_params2.sy              Compiling ir to object
+15_many_params2.sy              Linking object to exec
+15_many_params2.sy              Executing
+15_many_params2.sy              Accepted
+
+16_many_locals.sy               Compiling sy to ir
+16_many_locals.sy               Checking IR syntax
+16_many_locals.sy               Compiling ir to object
+16_many_locals.sy               Linking object to exec
+16_many_locals.sy               Executing
+16_many_locals.sy               Accepted
+
+17_matrix_sub.sy                Compiling sy to ir
+17_matrix_sub.sy                Checking IR syntax
+17_matrix_sub.sy                Compiling ir to object
+17_matrix_sub.sy                Linking object to exec
+17_matrix_sub.sy                Executing
+17_matrix_sub.sy                Accepted
+
+18_genealogical_tree.sy         Compiling sy to ir
+18_genealogical_tree.sy         Checking IR syntax
+18_genealogical_tree.sy         Compiling ir to object
+18_genealogical_tree.sy         Linking object to exec
+18_genealogical_tree.sy         Executing
+18_genealogical_tree.sy         Accepted
+
+19_sort_test6.sy                Compiling sy to ir
+19_sort_test6.sy                Checking IR syntax
+19_sort_test6.sy                Compiling ir to object
+19_sort_test6.sy                Linking object to exec
+19_sort_test6.sy                Executing
+19_sort_test6.sy                Accepted
+
+20_matrix_tran.sy               Compiling sy to ir
+20_matrix_tran.sy               Checking IR syntax
+20_matrix_tran.sy               Compiling ir to object
+20_matrix_tran.sy               Linking object to exec
+20_matrix_tran.sy               Executing
+20_matrix_tran.sy               Accepted
+
+21_kmp.sy                       Compiling sy to ir
+21_kmp.sy                       Checking IR syntax
+21_kmp.sy                       Compiling ir to object
+21_kmp.sy                       Linking object to exec
+21_kmp.sy                       Executing
+21_kmp.sy                       Accepted
+
+22_sort_test3.sy                Compiling sy to ir
+22_sort_test3.sy                Checking IR syntax
+22_sort_test3.sy                Compiling ir to object
+22_sort_test3.sy                Linking object to exec
+22_sort_test3.sy                Executing
+22_sort_test3.sy                Accepted
+
+23_brainfk.sy                   Compiling sy to ir
+23_brainfk.sy                   Checking IR syntax
+23_brainfk.sy                   Compiling ir to object
+23_brainfk.sy                   Linking object to exec
+23_brainfk.sy                   Executing
+23_brainfk.sy                   Accepted
+
+24_matrix_add.sy                Compiling sy to ir
+24_matrix_add.sy                Checking IR syntax
+24_matrix_add.sy                Compiling ir to object
+24_matrix_add.sy                Linking object to exec
+24_matrix_add.sy                Executing
+24_matrix_add.sy                Accepted
+
+25_int_io.sy                    Compiling sy to ir
+25_int_io.sy                    Checking IR syntax
+25_int_io.sy                    Compiling ir to object
+25_int_io.sy                    Linking object to exec
+25_int_io.sy                    Executing
+25_int_io.sy                    Accepted
+
+26_k_smallest.sy                Compiling sy to ir
+26_k_smallest.sy                Checking IR syntax
+26_k_smallest.sy                Compiling ir to object
+26_k_smallest.sy                Linking object to exec
+26_k_smallest.sy                Executing
+26_k_smallest.sy                Accepted
+
+27_brainfk.sy                   Compiling sy to ir
+27_brainfk.sy                   Checking IR syntax
+27_brainfk.sy                   Compiling ir to object
+27_brainfk.sy                   Linking object to exec
+27_brainfk.sy                   Executing
+27_brainfk.sy                   Accepted
+
+28_matrix_multiply.sy           Compiling sy to ir
+28_matrix_multiply.sy           Checking IR syntax
+28_matrix_multiply.sy           Compiling ir to object
+28_matrix_multiply.sy           Linking object to exec
+28_matrix_multiply.sy           Executing
+28_matrix_multiply.sy           Accepted
+
+29_csememtest1.sy               Compiling sy to ir
+29_csememtest1.sy               Checking IR syntax
+29_csememtest1.sy               Compiling ir to object
+29_csememtest1.sy               Linking object to exec
+29_csememtest1.sy               Executing
+29_csememtest1.sy               Accepted
+
+30_sort_test7.sy                Compiling sy to ir
+30_sort_test7.sy                Checking IR syntax
+30_sort_test7.sy                Compiling ir to object
+30_sort_test7.sy                Linking object to exec
+30_sort_test7.sy                Executing
+30_sort_test7.sy                Accepted
+
+31_hidden_var.sy                Compiling sy to ir
+31_hidden_var.sy                Checking IR syntax
+31_hidden_var.sy                Compiling ir to object
+31_hidden_var.sy                Linking object to exec
+31_hidden_var.sy                Executing
+31_hidden_var.sy                Accepted
+
+32_backpack.sy                  Compiling sy to ir
+32_backpack.sy                  Checking IR syntax
+32_backpack.sy                  Compiling ir to object
+32_backpack.sy                  Linking object to exec
+32_backpack.sy                  Executing
+32_backpack.sy                  Accepted
+
+33_array_only.sy                Compiling sy to ir
+33_array_only.sy                Checking IR syntax
+33_array_only.sy                Compiling ir to object
+33_array_only.sy                Linking object to exec
+33_array_only.sy                Executing
+33_array_only.sy                Accepted
+
+34_array_concat.sy              Compiling sy to ir
+34_array_concat.sy              Checking IR syntax
+34_array_concat.sy              Compiling ir to object
+34_array_concat.sy              Linking object to exec
+34_array_concat.sy              Executing
+34_array_concat.sy              Accepted
+
+35_csememtest3.sy               Compiling sy to ir
+35_csememtest3.sy               Checking IR syntax
+35_csememtest3.sy               Compiling ir to object
+35_csememtest3.sy               Linking object to exec
+35_csememtest3.sy               Executing
+35_csememtest3.sy               Accepted
+
+36_maximal_clique.sy            Compiling sy to ir
+36_maximal_clique.sy            Checking IR syntax
+36_maximal_clique.sy            Compiling ir to object
+36_maximal_clique.sy            Linking object to exec
+36_maximal_clique.sy            Executing
+36_maximal_clique.sy            Accepted
+
+37_matrix_mul.sy                Compiling sy to ir
+37_matrix_mul.sy                Checking IR syntax
+37_matrix_mul.sy                Compiling ir to object
+37_matrix_mul.sy                Linking object to exec
+37_matrix_mul.sy                Executing
+37_matrix_mul.sy                Accepted
+
+38_sort_test5.sy                Compiling sy to ir
+38_sort_test5.sy                Checking IR syntax
+38_sort_test5.sy                Compiling ir to object
+38_sort_test5.sy                Linking object to exec
+38_sort_test5.sy                Executing
+38_sort_test5.sy                Accepted
+
+39_dijkstra.sy                  Compiling sy to ir
+39_dijkstra.sy                  Checking IR syntax
+39_dijkstra.sy                  Compiling ir to object
+39_dijkstra.sy                  Linking object to exec
+39_dijkstra.sy                  Executing
+39_dijkstra.sy                  Accepted
+
+40_big_int_mul.sy               Compiling sy to ir
+40_big_int_mul.sy               Checking IR syntax
+40_big_int_mul.sy               Compiling ir to object
+40_big_int_mul.sy               Linking object to exec
+40_big_int_mul.sy               Executing
+40_big_int_mul.sy               Accepted
+
+41_substr.sy                    Compiling sy to ir
+41_substr.sy                    Checking IR syntax
+41_substr.sy                    Compiling ir to object
+41_substr.sy                    Linking object to exec
+41_substr.sy                    Executing
+41_substr.sy                    Accepted
+
+42_graph_coloring.sy            Compiling sy to ir
+42_graph_coloring.sy            Checking IR syntax
+42_graph_coloring.sy            Compiling ir to object
+42_graph_coloring.sy            Linking object to exec
+42_graph_coloring.sy            Executing
+42_graph_coloring.sy            Accepted
+
+43_percolation.sy               Compiling sy to ir
+43_percolation.sy               Checking IR syntax
+43_percolation.sy               Compiling ir to object
+43_percolation.sy               Linking object to exec
+43_percolation.sy               Executing
+43_percolation.sy               Accepted
+
+44_DSU.sy                       Compiling sy to ir
+44_DSU.sy                       Checking IR syntax
+44_DSU.sy                       Compiling ir to object
+44_DSU.sy                       Linking object to exec
+44_DSU.sy                       Executing
+44_DSU.sy                       Accepted
+
+45_search.sy                    Compiling sy to ir
+45_search.sy                    Checking IR syntax
+45_search.sy                    Compiling ir to object
+45_search.sy                    Linking object to exec
+45_search.sy                    Executing
+45_search.sy                    Accepted
+
+46_prim.sy                      Compiling sy to ir
+46_prim.sy                      Checking IR syntax
+46_prim.sy                      Compiling ir to object
+46_prim.sy                      Linking object to exec
+46_prim.sy                      Executing
+46_prim.sy                      Accepted
+
+47_float.sy                     Compiling sy to ir
+47_float.sy                     Checking IR syntax
+47_float.sy                     Compiling ir to object
+47_float.sy                     Linking object to exec
+47_float.sy                     Executing
+47_float.sy                     Accepted
+
+48_max_flow.sy                  Compiling sy to ir
+48_max_flow.sy                  Checking IR syntax
+48_max_flow.sy                  Compiling ir to object
+48_max_flow.sy                  Linking object to exec
+48_max_flow.sy                  Executing
+48_max_flow.sy                  Accepted
+
+49_DP.sy                        Compiling sy to ir
+49_DP.sy                        Checking IR syntax
+49_DP.sy                        Compiling ir to object
+49_DP.sy                        Linking object to exec
+49_DP.sy                        Executing
+49_DP.sy                        Accepted
+
+50_BST.sy                       Compiling sy to ir
+50_BST.sy                       Checking IR syntax
+50_BST.sy                       Compiling ir to object
+50_BST.sy                       Linking object to exec
+50_BST.sy                       Executing
+50_BST.sy                       Accepted
+
+51_LCA.sy                       Compiling sy to ir
+51_LCA.sy                       Checking IR syntax
+51_LCA.sy                       Compiling ir to object
+51_LCA.sy                       Linking object to exec
+51_LCA.sy                       Executing
+51_LCA.sy                       Accepted
+
+52_side_effect2.sy              Compiling sy to ir
+52_side_effect2.sy              Checking IR syntax
+52_side_effect2.sy              Compiling ir to object
+52_side_effect2.sy              Linking object to exec
+52_side_effect2.sy              Executing
+52_side_effect2.sy              Accepted
+
+53_BFS.sy                       Compiling sy to ir
+53_BFS.sy                       Checking IR syntax
+53_BFS.sy                       Compiling ir to object
+53_BFS.sy                       Linking object to exec
+53_BFS.sy                       Executing
+53_BFS.sy                       Accepted
+
+54_expr_eval.sy                 Compiling sy to ir
+54_expr_eval.sy                 Checking IR syntax
+54_expr_eval.sy                 Compiling ir to object
+54_expr_eval.sy                 Linking object to exec
+54_expr_eval.sy                 Executing
+54_expr_eval.sy                 Accepted
+
+55_many_dimensions.sy           Compiling sy to ir
+55_many_dimensions.sy           Checking IR syntax
+55_many_dimensions.sy           Compiling ir to object
+55_many_dimensions.sy           Linking object to exec
+55_many_dimensions.sy           Executing
+55_many_dimensions.sy           Accepted
+
+56_many_params.sy               Compiling sy to ir
+56_many_params.sy               Checking IR syntax
+56_many_params.sy               Compiling ir to object
+56_many_params.sy               Linking object to exec
+56_many_params.sy               Executing
+56_many_params.sy               Accepted
+
+57_math.sy                      Compiling sy to ir
+57_math.sy                      Checking IR syntax
+57_math.sy                      Compiling ir to object
+57_math.sy                      Linking object to exec
+57_math.sy                      Executing
+57_math.sy                      Accepted
+
+58_dct.sy                       Compiling sy to ir
+58_dct.sy                       Checking IR syntax
+58_dct.sy                       Compiling ir to object
+58_dct.sy                       Linking object to exec
+58_dct.sy                       Executing
+58_dct.sy                       Accepted
+
+59_many_params.sy               Compiling sy to ir
+59_many_params.sy               Checking IR syntax
+59_many_params.sy               Compiling ir to object
+59_many_params.sy               Linking object to exec
+59_many_params.sy               Executing
+59_many_params.sy               Accepted
+
+60_light2d.sy                   Compiling sy to ir
+60_light2d.sy                   Checking IR syntax
+60_light2d.sy                   Compiling ir to object
+60_light2d.sy                   Linking object to exec
+60_light2d.sy                   Executing
+60_light2d.sy                   Accepted
+
+61_calculator.sy                Compiling sy to ir
+61_calculator.sy                Checking IR syntax
+61_calculator.sy                Compiling ir to object
+61_calculator.sy                Linking object to exec
+61_calculator.sy                Executing
+61_calculator.sy                Accepted
+
+62_long_code.sy                 Compiling sy to ir
+62_long_code.sy                 Checking IR syntax
+62_long_code.sy                 Compiling ir to object
+62_long_code.sy                 Linking object to exec
+62_long_code.sy                 Executing
+62_long_code.sy                 Accepted
+
+63_splay.sy                     Compiling sy to ir
+63_splay.sy                     Checking IR syntax
+63_splay.sy                     Compiling ir to object
+63_splay.sy                     Linking object to exec
+63_splay.sy                     Executing
+63_splay.sy                     Accepted
+
+64_2048.sy                      Compiling sy to ir
+64_2048.sy                      Checking IR syntax
+64_2048.sy                      Compiling ir to object
+64_2048.sy                      Linking object to exec
+64_2048.sy                      Executing
+64_2048.sy                      Accepted
+
+65_DFS.sy                       Compiling sy to ir
+65_DFS.sy                       Checking IR syntax
+65_DFS.sy                       Compiling ir to object
+65_DFS.sy                       Linking object to exec
+65_DFS.sy                       Executing
+65_DFS.sy                       Accepted
+
+66_rotate.sy                    Compiling sy to ir
+66_rotate.sy                    Checking IR syntax
+66_rotate.sy                    Compiling ir to object
+66_rotate.sy                    Linking object to exec
+66_rotate.sy                    Executing
+66_rotate.sy                    Accepted
+
+67_rotate.sy                    Compiling sy to ir
+67_rotate.sy                    Checking IR syntax
+67_rotate.sy                    Compiling ir to object
+67_rotate.sy                    Linking object to exec
+67_rotate.sy                    Executing
+67_rotate.sy                    Accepted
+
+68_full_conn.sy                 Compiling sy to ir
+68_full_conn.sy                 Checking IR syntax
+68_full_conn.sy                 Compiling ir to object
+68_full_conn.sy                 Linking object to exec
+68_full_conn.sy                 Executing
+68_full_conn.sy                 Accepted
+
+69_complex_array4.sy            Compiling sy to ir
+69_complex_array4.sy            Checking IR syntax
+69_complex_array4.sy            Compiling ir to object
+69_complex_array4.sy            Linking object to exec
+69_complex_array4.sy            Executing
+69_complex_array4.sy            Accepted
+
+70_fp_params.sy                 Compiling sy to ir
+70_fp_params.sy                 Checking IR syntax
+70_fp_params.sy                 Compiling ir to object
+70_fp_params.sy                 Linking object to exec
+70_fp_params.sy                 Executing
+70_fp_params.sy                 Accepted
+
+71_derich1.sy                   Compiling sy to ir
+71_derich1.sy                   Checking IR syntax
+71_derich1.sy                   Compiling ir to object
+71_derich1.sy                   Linking object to exec
+71_derich1.sy                   Executing
+71_derich1.sy                   Accepted
+
+72_lisp1.sy                     Compiling sy to ir
+72_lisp1.sy                     Checking IR syntax
+72_lisp1.sy                     Compiling ir to object
+72_lisp1.sy                     Linking object to exec
+72_lisp1.sy                     Executing
+72_lisp1.sy                     Accepted
+
+73_long_func.sy                 Compiling sy to ir
+73_long_func.sy                 Checking IR syntax
+73_long_func.sy                 Compiling ir to object
+73_long_func.sy                 Linking object to exec
+73_long_func.sy                 Executing
+73_long_func.sy                 Accepted
+
+74_json.sy                      Compiling sy to ir
+74_json.sy                      Checking IR syntax
+74_json.sy                      Compiling ir to object
+74_json.sy                      Linking object to exec
+74_json.sy                      Executing
+74_json.sy                      Accepted
+
+75_rbtree_in_segtree.sy         Compiling sy to ir
+75_rbtree_in_segtree.sy         Checking IR syntax
+75_rbtree_in_segtree.sy         Compiling ir to object
+75_rbtree_in_segtree.sy         Linking object to exec
+75_rbtree_in_segtree.sy         Executing
+75_rbtree_in_segtree.sy         Accepted
+
+76_light2d.sy                   Compiling sy to ir
+76_light2d.sy                   Checking IR syntax
+76_light2d.sy                   Compiling ir to object
+76_light2d.sy                   Linking object to exec
+76_light2d.sy                   Executing
+76_light2d.sy                   Accepted
+
+77_arr_defn3.sy                 Compiling sy to ir
+77_arr_defn3.sy                 Checking IR syntax
+77_arr_defn3.sy                 Compiling ir to object
+77_arr_defn3.sy                 Linking object to exec
+77_arr_defn3.sy                 Executing
+77_arr_defn3.sy                 Accepted
+
+78_arr_defn4.sy                 Compiling sy to ir
+78_arr_defn4.sy                 Checking IR syntax
+78_arr_defn4.sy                 Compiling ir to object
+78_arr_defn4.sy                 Linking object to exec
+78_arr_defn4.sy                 Executing
+78_arr_defn4.sy                 Accepted
+
+79_const_array_defn.sy          Compiling sy to ir
+79_const_array_defn.sy          Checking IR syntax
+79_const_array_defn.sy          Compiling ir to object
+79_const_array_defn.sy          Linking object to exec
+79_const_array_defn.sy          Executing
+79_const_array_defn.sy          Accepted
+
+80_arr_expr_len.sy              Compiling sy to ir
+80_arr_expr_len.sy              Checking IR syntax
+80_arr_expr_len.sy              Compiling ir to object
+80_arr_expr_len.sy              Linking object to exec
+80_arr_expr_len.sy              Executing
+80_arr_expr_len.sy              Accepted
+
+81_color.sy                     Compiling sy to ir
+81_color.sy                     Checking IR syntax
+81_color.sy                     Compiling ir to object
+81_color.sy                     Linking object to exec
+81_color.sy                     Executing
+81_color.sy                     Accepted
+
+82_n_queens.sy                  Compiling sy to ir
+82_n_queens.sy                  Checking IR syntax
+82_n_queens.sy                  Compiling ir to object
+82_n_queens.sy                  Linking object to exec
+82_n_queens.sy                  Executing
+82_n_queens.sy                  Accepted
+
+83_var_name.sy                  Compiling sy to ir
+83_var_name.sy                  Checking IR syntax
+83_var_name.sy                  Compiling ir to object
+83_var_name.sy                  Linking object to exec
+83_var_name.sy                  Executing
+83_var_name.sy                  Accepted
+
+84_skip_spaces.sy               Compiling sy to ir
+84_skip_spaces.sy               Checking IR syntax
+84_skip_spaces.sy               Compiling ir to object
+84_skip_spaces.sy               Linking object to exec
+84_skip_spaces.sy               Executing
+84_skip_spaces.sy               Accepted
+
+85_long_array.sy                Compiling sy to ir
+85_long_array.sy                Checking IR syntax
+85_long_array.sy                Compiling ir to object
+85_long_array.sy                Linking object to exec
+85_long_array.sy                Executing
+85_long_array.sy                Accepted
+
+86_long_code2.sy                Compiling sy to ir
+86_long_code2.sy                Checking IR syntax
+86_long_code2.sy                Compiling ir to object
+86_long_code2.sy                Linking object to exec
+86_long_code2.sy                Executing
+86_long_code2.sy                Accepted
+
+87_nested_calls.sy              Compiling sy to ir
+87_nested_calls.sy              Checking IR syntax
+87_nested_calls.sy              Compiling ir to object
+87_nested_calls.sy              Linking object to exec
+87_nested_calls.sy              Executing
+87_nested_calls.sy              Accepted
+
+88_nested_loops.sy              Compiling sy to ir
+88_nested_loops.sy              Checking IR syntax
+88_nested_loops.sy              Compiling ir to object
+88_nested_loops.sy              Linking object to exec
+88_nested_loops.sy              Executing
+88_nested_loops.sy              Accepted
+
+89_comment2.sy                  Compiling sy to ir
+89_comment2.sy                  Checking IR syntax
+89_comment2.sy                  Compiling ir to object
+89_comment2.sy                  Linking object to exec
+89_comment2.sy                  Executing
+89_comment2.sy                  Accepted
+
+90_global_arr_init.sy           Compiling sy to ir
+90_global_arr_init.sy           Checking IR syntax
+90_global_arr_init.sy           Compiling ir to object
+90_global_arr_init.sy           Linking object to exec
+90_global_arr_init.sy           Executing
+90_global_arr_init.sy           Accepted
+
+91_dp.sy                        Compiling sy to ir
+91_dp.sy                        Checking IR syntax
+91_dp.sy                        Compiling ir to object
+91_dp.sy                        Linking object to exec
+91_dp.sy                        Executing
+91_dp.sy                        Accepted
+
+92_sort.sy                      Compiling sy to ir
+92_sort.sy                      Checking IR syntax
+92_sort.sy                      Compiling ir to object
+92_sort.sy                      Linking object to exec
+92_sort.sy                      Executing
+92_sort.sy                      Accepted
+
+93_arr_defn4.sy                 Compiling sy to ir
+93_arr_defn4.sy                 Checking IR syntax
+93_arr_defn4.sy                 Compiling ir to object
+93_arr_defn4.sy                 Linking object to exec
+93_arr_defn4.sy                 Executing
+93_arr_defn4.sy                 Accepted
+
+94_arr_expr_len.sy              Compiling sy to ir
+94_arr_expr_len.sy              Checking IR syntax
+94_arr_expr_len.sy              Compiling ir to object
+94_arr_expr_len.sy              Linking object to exec
+94_arr_expr_len.sy              Executing
+94_arr_expr_len.sy              Accepted
+
+95_exchange_array.sy            Compiling sy to ir
+95_exchange_array.sy            Checking IR syntax
+95_exchange_array.sy            Compiling ir to object
+95_exchange_array.sy            Linking object to exec
+95_exchange_array.sy            Executing
+95_exchange_array.sy            Accepted
+
+96_remove_duplicate_element.sy  Compiling sy to ir
+96_remove_duplicate_element.sy  Checking IR syntax
+96_remove_duplicate_element.sy  Compiling ir to object
+96_remove_duplicate_element.sy  Linking object to exec
+96_remove_duplicate_element.sy  Executing
+96_remove_duplicate_element.sy  Accepted
+
+97_last_word_length.sy          Compiling sy to ir
+97_last_word_length.sy          Checking IR syntax
+97_last_word_length.sy          Compiling ir to object
+97_last_word_length.sy          Linking object to exec
+97_last_word_length.sy          Executing
+97_last_word_length.sy          Accepted
+
+98_max_subsequence_sum.sy       Compiling sy to ir
+98_max_subsequence_sum.sy       Checking IR syntax
+98_max_subsequence_sum.sy       Compiling ir to object
+98_max_subsequence_sum.sy       Linking object to exec
+98_max_subsequence_sum.sy       Executing
+98_max_subsequence_sum.sy       Accepted
+
+99_unique_path.sy               Compiling sy to ir
+99_unique_path.sy               Checking IR syntax
+99_unique_path.sy               Compiling ir to object
+99_unique_path.sy               Linking object to exec
+99_unique_path.sy               Executing
+99_unique_path.sy               Accepted
+
+100_jump_game.sy                Compiling sy to ir
+100_jump_game.sy                Checking IR syntax
+100_jump_game.sy                Compiling ir to object
+100_jump_game.sy                Linking object to exec
+100_jump_game.sy                Executing
+100_jump_game.sy                Accepted
+
+==============================
+	Group: Advanced, Stage: llvm, Opt Level: 0
+	Passed: 100 / 100
+	Pass Rate: 100.00%
+==============================
