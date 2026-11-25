@@ -151,7 +151,6 @@ namespace FE::AST
             const std::string& context);
 
         void registerFunctionSignature(FuncDeclStmt& node);
-        bool registerGlobalDeclaration(VarDeclStmt& node);
         bool checkVarInit(VarDeclarator& decl, VarAttr& attr, bool isGlobal);
         void flattenInitializer(InitDecl* init, const std::vector<int>& dims, Type* elem, VarAttr& attr,
             size_t& cursor, bool isGlobal, const Node& loc);

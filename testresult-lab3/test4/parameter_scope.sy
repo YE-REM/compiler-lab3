@@ -1,0 +1,13 @@
+const int cols = 3;
+int g[2][cols];
+int sum(int a[][cols], int cols) {
+    return a[0][0] + a[1][2] + cols;
+}
+int main() {
+    int cols = 4;
+    int a[2][3];
+    a[0][0] = 5;
+    a[1][2] = 7;
+    g[1][2] = sum(a, cols);
+    return g[1][2];
+}

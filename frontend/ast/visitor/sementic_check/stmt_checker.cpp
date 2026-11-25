@@ -43,18 +43,7 @@ namespace FE::AST
             for (ParamDeclarator* p : *node.params)
             {
                 if (!p || !p->entry) continue;
-                VarAttr pa = p->varAttr;
-                if (!pa.type) pa.type = elementType(p->type);
-                pa.isParam    = true;
-                pa.scopeLevel = symTable.getScopeDepth();
-                if (symTable.hasSymbolInCurrentScope(p->entry))
-                {
-                    reportError("duplicate parameter '" + p->entry->getName() + "'", *p);
-                }
-                else
-                {
-                    symTable.addSymbol(p->entry, pa);
-                }
+                apply(*this, *p);
             }
         }
 
@@ -81,13 +70,7 @@ namespace FE::AST
         // (void)node;
         // TODO("Lab3-1: Implement VarDeclStmt semantic checking");
 
-        if (!node.decl) return true;
-        if (symTable.isGlobalScope())
-        {
-            // 全局变量已在 Root 的预扫描阶段检查
-            return true;
-        }
-        return apply(*this, *node.decl);
+        return !node.decl || apply(*this, *node.decl);
     }
 
     bool ASTChecker::visit(BlockStmt& node)
@@ -281,5 +264,76 @@ namespace FE::AST
         --loopDepth;
         symTable.exitScope();
         return ok;
+    }
+
+    void ASTChecker::registerFunctionSignature(FuncDeclStmt& node)
+    {
+        FE::Sym::Entry* entry = node.entry;
+        if (!entry) return;
+
+        auto it = funcDecls.find(entry);
+        if (it != funcDecls.end())
+        {
+            // funcDecls 中已有同名函数（包括 SysY 运行时库函数）
+            reportError("redefinition of function '" + entry->getName() + "'", node);
+            return;
+        }
+
+        funcDecls[entry] = &node;
+
+        VarAttr funcAttr;
+        funcAttr.type       = elementType(node.retType);
+        funcAttr.isTensor   = isTensorType(node.retType);
+        funcAttr.isFunction = true;
+        funcAttr.isGlobal   = true;
+        funcAttr.scopeLevel = 0;
+
+        if (symTable.hasSymbolInCurrentScope(entry))
+        {
+            reportError("redefinition of symbol '" + entry->getName() + "'", node);
+        }
+        else
+        {
+            symTable.addSymbol(entry, funcAttr);
+        }
+
+        node.attr.val.value.type     = funcAttr.type;
+        node.attr.val.value.isTensor = funcAttr.isTensor;
+        node.attr.val.value.isArray  = false;
+        node.attr.val.value.dims.clear();
+
+        if (node.retType->getTypeGroup() == TypeGroup::TENSOR && !node.retDimsKnown)
+        {
+            node.retIsTensor = true;
+        }
+
+        std::set<std::string> paramNames;
+        if (node.params)
+        {
+            for (ParamDeclarator* p : *node.params)
+            {
+                if (!p || !p->entry) continue;
+                const std::string& name = p->entry->getName();
+                if (!paramNames.insert(name).second)
+                {
+                    reportError("duplicate parameter '" + name + "'", *p);
+                }
+
+                apply(*this, *p);
+            }
+        }
+    }
+
+    bool ASTChecker::isCondScalar(const VarValue& v) const
+    {
+        return isArithmeticScalar(v);
+    }
+
+    void ASTChecker::checkBranch(StmtNode* stmt)
+    {
+        if (!stmt) return;
+        symTable.enterScope();
+        apply(*this, *stmt);
+        symTable.exitScope();
     }
 }  // namespace FE::AST
