@@ -1,0 +1,10 @@
+
+tensor int calc(tensor int x[], tensor int y[]) {
+  tensor int r[2]=-(x+y)+12;
+  return r;
+}
+int main(){
+  tensor int a[2]={1,2}; tensor int b[2]={3,4};
+  tensor int c[2]=calc(a,b);
+  return c[0]+c[1];
+}

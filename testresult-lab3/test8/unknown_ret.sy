@@ -1,0 +1,3 @@
+
+tensor int f(tensor int v[]) { return v; }
+int main(){ return 0; }

@@ -1,0 +1,9 @@
+
+tensor int add_fixed(tensor int a[]) {
+  tensor int b[2]={1,2};
+  return a+b;
+}
+int main(){
+  tensor int a[2]={6,10}; tensor int b[2]=add_fixed(a);
+  return b[0]+b[1];
+}

@@ -1,6 +1,5 @@
 #include <middleend/visitor/codegen/ast_codegen.h>
 #include <algorithm>
-#include <numeric>
 
 namespace ME
 {
@@ -78,11 +77,12 @@ namespace ME
         if (lhs.attr.val.value.isTensor)
         {
             const auto& dims = lhs.attr.val.value.dims;
-            emitTensorAssign(address->getRegNum(), value, type, std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int>()));
+            emitTensorAssign(address->getRegNum(), value, type, dims, rhs.attr.val.value.dims);
 
             // 赋值表达式的值是目标张量，元素复制结束后重新产生其地址。
             size_t result = getNewRegId();
             insert(createGEP_I32Inst(type, address, {}, {getImmeI32Operand(0)}, result));
+            if (dims.front() < 0) tensorFirstDims[result] = tensorFirstDim(address->getRegNum(), dims);
             return;
         }
 
@@ -249,6 +249,21 @@ namespace ME
             size_t reg = genExpr(expr, m);
             if (type != DataType::PTR) reg = castReg(reg, convert(expr.attr.val.value.type), type);
             args.emplace_back(type, getRegOperand(reg));
+            if (param.varAttr.isTensor)
+                args.emplace_back(DataType::I32, tensorFirstDim(reg, expr.attr.val.value.dims));
+        }
+
+        if (f.retDimsKnown)
+        {
+            // 固定形状返回：调用者分配结果存储，把地址插在参数表最前面。
+            const auto elem = convert(static_cast<FE::AST::TensorType*>(f.retType)->elem);
+            size_t storage = newEntryAlloca(elem, f.retDims);
+            size_t result = getNewRegId();
+            std::vector<Operand*> zeros(f.retDims.size() + 1, getImmeI32Operand(0));
+            insert(createGEP_I32Inst(elem, getRegOperand(storage), f.retDims, zeros, result));
+            args.insert(args.begin(), {DataType::PTR, getRegOperand(result)});
+            insert(createCallInst(DataType::VOID, f.entry->getName(), args));
+            return;
         }
 
         const auto ret = convert(f.retType);
@@ -311,6 +326,8 @@ namespace ME
 
         size_t result = getNewRegId();
         insert(createGEP_I32Inst(convert(attr->type), base, gepDims, indices, result));
+        if (attr->isTensor && attr->isPointer && used == 0)
+            tensorFirstDims[result] = tensorFirstDims.at(local);
         return getRegOperand(result);
     }
 

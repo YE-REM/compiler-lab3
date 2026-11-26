@@ -1,0 +1,27 @@
+Build: PASS
+tensor_elements: PASS
+tensor_matmul: PASS
+known_result_shape: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=19, actual=19
+  stdout: expected='', actual=''
+dynamic_elementwise: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=14, actual=14
+  stdout: expected='', actual=''
+runtime_extent_forwarding: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=14, actual=14
+  stdout: expected='', actual=''
+dynamic_matmul: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=154, actual=154
+  stdout: expected='', actual=''
+call_wrong_tail: semantic rejection PASS, exit=1
+Semantic check failed with 1 errors.
+Error: argument 1 of 'f' has incompatible shape at line 3
+unknown_ret: semantic rejection PASS, exit=1
+Semantic check failed with 2 errors.
+Error: returned tensor shape must be known at compile time at line 2
+Error: tensor function must return a compile-time known shape at line 2
+mismatched_returns: semantic rejection PASS, exit=1
+Semantic check failed with 1 errors.
+Error: inconsistent tensor return shape at line 2
+tensor_calls: PASS
+Recorded cases: 7/7 PASS

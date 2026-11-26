@@ -1,0 +1,7 @@
+
+void twice(tensor int a[]) { a=a*2; }
+void forward(tensor int a[]) { twice(a); }
+int main(){
+  tensor int a[2]={2,4}; tensor int b[3]={1,2,3};
+  forward(a); forward(b); return a[1]+b[2];
+}
