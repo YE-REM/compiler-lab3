@@ -1,0 +1,14 @@
+Build: PASS
+tensor_elements: PASS
+tensor_rectangular: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='58 64 139 154\n', actual='58 64 139 154\n'
+tensor_float_matmul: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='0x1.2p+3\n', actual='0x1.2p+3\n'
+tensor_matmul_bad: semantic rejection PASS, exit=1
+Semantic check failed with 2 errors.
+Error: tensor shapes are incompatible for '@' at line 2
+Error: void expression cannot be used as an initializer at line 2
+tensor_matmul: PASS
+Recorded cases: 3/3 PASS

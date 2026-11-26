@@ -1,0 +1,6 @@
+
+tensor float a[1][2]={{1.5,2.0}};
+int main(){
+  tensor float b[2][1]={{2.0},{3.0}};
+  tensor float c[1][1]=a@b; putfloat(c[0][0]); putch(10); return 0;
+}

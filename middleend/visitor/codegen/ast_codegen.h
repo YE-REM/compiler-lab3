@@ -181,6 +181,7 @@ namespace ME
         void emitTensorUnary(FE::AST::UnaryExpr& node, Module* m);
         void emitTensorElementwise(FE::AST::BinaryExpr& node, Module* m);
         void emitTensorAssign(size_t dstReg, size_t srcReg, DataType elem, int total);
+        void emitTensorMatMul(FE::AST::BinaryExpr& node, Module* m);
 
       private:
         DataType convert(FE::AST::Type* at);
