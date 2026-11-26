@@ -1,0 +1,16 @@
+Build: PASS
+arrays: PASS
+tensor_assignment_value: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=9, actual=9
+  stdout: expected='', actual=''
+tensor_elements: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=252, actual=252
+  stdout: expected='', actual=''
+tensor_float: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='0x1.4p+0\n', actual='0x1.4p+0\n'
+tensor_div_and_mod: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=7, actual=7
+  stdout: expected='', actual=''
+tensor_elements: PASS
+Recorded cases: 4/4 PASS

@@ -1,0 +1,5 @@
+
+int main(){
+  tensor float a[2]={1.5,2.5}; tensor float b[2]=0.5+a/2.0;
+  putfloat(b[0]); putch(10); return 0;
+}

@@ -58,6 +58,14 @@ namespace ME
             std::vector<Operand*> zeros(dims.size() + 1, getImmeI32Operand(0));
             insert(createGEP_I32Inst(type, getRegOperand(storage), dims, zeros, base));
             const auto count = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int>());
+            if (init)
+            {
+                // 张量表达式直接拷贝到声明分配的存储。
+                auto& expr = *init->init_val;
+                size_t value = genExpr(expr, m);
+                emitTensorAssign(base, value, type, count);
+                continue;
+            }
 
             // 列表未写到的位置保持为零。显式初值使用语义阶段记录的偏移。
             CallInst::argList args = {

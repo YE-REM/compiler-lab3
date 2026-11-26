@@ -1,0 +1,6 @@
+
+int main(){
+  tensor int a[2]={1,2}; tensor int b[2]={4,5};
+  tensor int c[2]=(a=b);
+  return a[0]+c[1];
+}
