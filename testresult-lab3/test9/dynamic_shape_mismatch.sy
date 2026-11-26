@@ -1,0 +1,7 @@
+
+void add_into(tensor int a[], tensor int b[]) { a=a+b; }
+int main(){
+  tensor int a[2]={1,2}; tensor int b[3]={1,2,3};
+  add_into(a,b);
+  return 0;
+}

@@ -1,0 +1,42 @@
+Build: PASS
+parser: PASS
+symbols: PASS
+root: PASS
+declarations: PASS
+expressions: PASS
+semantic: PASS
+scalar_ir: PASS
+Basic LLVM -O0: 100/100
+basic: PASS
+arrays: PASS
+Advanced LLVM -O0: 100/100
+advanced: PASS
+tensor_parser: PASS
+tensor_types: PASS
+tensor_elements: PASS
+tensor_matmul: PASS
+tensor_calls: PASS
+tensor_basic: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='21 24 27 30\n5 12 21 32\n1 2 0 1\n6 8 10 12\n36\n58 64 139 154\n', actual='21 24 27 30\n5 12 21 32\n1 2 0 1\n6 8 10 12\n36\n58 64 139 154\n'
+tensor_ops: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='4 4 4 4\n0x1p-1 0x1.2p+2 0x1p-1\n19 22 43 50\n', actual='4 4 4 4\n0x1p-1 0x1.2p+2 0x1p-1\n19 22 43 50\n'
+tensor_param: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=0, actual=0
+  stdout: expected='21\n', actual='21\n'
+tensor_error: semantic rejection PASS, exit=1
+Semantic check failed with 5 errors.
+Error: tensor shapes/types must match for addition at line 6
+Error: void expression cannot be used as an initializer at line 6
+Error: array/tensor value cannot be used as scalar in initializer at line 8
+Error: tensor type/shape mismatch in assignment at line 9
+Error: if condition must be a scalar expression at line 10
+over_nested_tensor: semantic rejection PASS, exit=1
+Semantic check failed with 1 errors.
+Error: tensor initializer nesting exceeds its rank at line 2
+dynamic_shape_mismatch: LLVM IR verification PASS, link PASS, run PASS
+  exit: expected=-4, actual=-4
+  stdout: expected='', actual=''
+acceptance: PASS
+Recorded cases: 6/6 PASS
